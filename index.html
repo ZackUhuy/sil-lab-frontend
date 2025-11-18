@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIL Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+    <div class="bg-white p-8 rounded shadow-md w-96">
+        <h2 class="text-2xl font-bold mb-6 text-center text-blue-600">Masuk SIL Lab</h2>
+        
+        <form id="loginForm">
+            <div class="mb-4">
+                <label class="block text-gray-700">Email</label>
+                <input type="email" id="email" class="w-full p-2 border rounded mt-1" required>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700">Password</label>
+                <input type="password" id="password" class="w-full p-2 border rounded mt-1" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Login</button>
+        </form>
+        <p class="mt-4 text-sm text-center">Belum punya akun? <a href="register.html" class="text-blue-500">Daftar</a></p>
+    </div>
+
+    <script>
+        // --- KONFIGURASI URL ---
+        // Jika jalan di localhost laptop sendiri:
+        const API_URL = 'http://localhost:3000/api';
+        
+        // Jika ingin akses via HP/WiFi (Ganti angka IP sesuai ipconfig laptopmu):
+        // const API_URL = 'http://192.168.1.8:3000/api'; 
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // 1. Simpan Token & Data User ke Local Storage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // 2. Tampilkan Pesan Selamat Datang
+                    alert(`Login Berhasil! Selamat datang, ${data.user.nama} (${data.user.role})`);
+
+                    // 3. LOGIKA REDIRECT BERDASARKAN ROLE (Admin vs User Biasa)
+                    if (data.user.role === 'admin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+
+                } else {
+                    alert(data.error || 'Login gagal');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Gagal menghubungi server. Pastikan Backend (npm run dev) sudah jalan.');
+            }
+        });
+    </script>
+</body>
+</html>

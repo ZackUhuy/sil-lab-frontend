@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - SIL Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <nav class="bg-gray-800 p-4 text-white flex justify-between">
+        <h1 class="font-bold text-xl">ADMIN PANEL</h1>
+        <button onclick="logout()" class="bg-red-500 px-3 py-1 rounded text-sm">Logout</button>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <h2 class="text-2xl font-bold mb-6">Daftar Permintaan Peminjaman</h2>
+
+        <div class="bg-white rounded shadow overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-3 px-4 text-left">Peminjam</th>
+                        <th class="py-3 px-4 text-left">Ruangan</th>
+                        <th class="py-3 px-4 text-left">Waktu</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // GANTI IP SESUAI DENGAN IP LAPTOP ANDA
+        const API_URL = 'http://localhost:3000/api'; 
+        const token = localStorage.getItem('token');
+
+        // Cek Auth & Role
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || user.role !== 'admin') {
+            alert('Akses Ditolak! Anda bukan Admin.');
+            window.location.href = 'index.html';
+        }
+
+        async function loadAllBookings() {
+            try {
+                const res = await fetch(`${API_URL}/booking`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                const tableBody = document.getElementById('adminTableBody');
+                tableBody.innerHTML = '';
+
+                data.forEach(item => {
+                    // Warna Status
+                    let statusColor = 'bg-yellow-100 text-yellow-800';
+                    if(item.status === 'disetujui') statusColor = 'bg-green-100 text-green-800';
+                    if(item.status === 'ditolak') statusColor = 'bg-red-100 text-red-800';
+
+                    const row = `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4">
+                                <div class="font-bold text-sm">${item.users?.nama || 'Unknown'}</div>
+                                <div class="text-xs text-gray-500">${item.users?.role || ''}</div>
+                            </td>
+                            <td class="py-3 px-4">${item.ruangan?.nama_ruang || item.ruang_id}</td>
+                            <td class="py-3 px-4 text-sm">
+                                ${new Date(item.waktu_mulai).toLocaleString()}<br>
+                                s/d<br>
+                                ${new Date(item.waktu_selesai).toLocaleString()}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="${statusColor} px-2 py-1 rounded text-xs font-bold">${item.status.toUpperCase()}</span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                ${item.status === 'pending' ? `
+                                    <button onclick="updateStatus('${item.id}', 'disetujui')" class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 mr-1">Terima</button>
+                                    <button onclick="updateStatus('${item.id}', 'ditolak')" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600">Tolak</button>
+                                ` : '<span class="text-gray-400 text-xs">Selesai</span>'}
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function updateStatus(id, status) {
+            if(!confirm(`Yakin ingin mengubah status menjadi ${status}?`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/booking/${id}/status`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if(res.ok) {
+                    alert('Status berhasil diperbarui');
+                    loadAllBookings();
+                } else {
+                    const err = await res.json();
+                    alert('Gagal: ' + err.error);
+                }
+            } catch (error) {
+                alert('Error server');
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        loadAllBookings();
+    </script>
+</body>
+</html>
