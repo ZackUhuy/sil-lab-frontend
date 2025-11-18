@@ -35,6 +35,10 @@
     </div>
 
     <script>
+        // --- PERBAIKAN ---
+        // Menambahkan API_URL yang konsisten dengan file lain
+        const API_URL = 'https://sil-lab-backend.vercel.app/api';
+
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
@@ -45,7 +49,9 @@
             };
 
             try {
-                const res = await fetch('http://localhost:3000/api/auth/register', {
+                // Mengganti 'localhost' dengan variabel API_URL
+                // Sekarang URL akan menjadi: .../api/auth/register
+                const res = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
