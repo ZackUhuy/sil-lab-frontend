@@ -21,11 +21,18 @@
         <div class="bg-white p-6 rounded shadow md:col-span-1 h-fit">
             <h2 class="text-xl font-bold mb-4">Ajukan Peminjaman</h2>
             <form id="bookingForm">
+                
+                <!-- === PERUBAHAN DI SINI === -->
                 <div class="mb-3">
-                    <label class="block text-sm text-gray-600">Ruangan (ID UUID)</label>
-                    <input type="text" id="ruangId" placeholder="Masukkan ID Ruangan" class="w-full p-2 border rounded" required>
-                    <small class="text-xs text-gray-400">Copy ID dari Database Supabase</small>
+                    <label class="block text-sm text-gray-600">Pilih Ruangan</label>
+                    <!-- Ganti input text menjadi select (dropdown) -->
+                    <select id="ruangId" class="w-full p-2 border rounded bg-white" required>
+                        <option value="" disabled selected>Memuat ruangan...</option>
+                        <!-- Pilihan ruangan akan diisi oleh JavaScript -->
+                    </select>
                 </div>
+                <!-- ======================== -->
+
                 <div class="mb-3">
                     <label class="block text-sm text-gray-600">Waktu Mulai</label>
                     <input type="datetime-local" id="waktuMulai" class="w-full p-2 border rounded" required>
@@ -51,11 +58,11 @@
                             <th class="py-3 px-6 text-left">Ruangan</th>
                             <th class="py-3 px-6 text-left">Waktu</th>
                             <th class="py-3 px-6 text-center">Status</th>
-                            <th class="py-3 px-6 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="bookingTableBody" class="text-gray-600 text-sm font-light">
-                        </tbody>
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -64,61 +71,60 @@
     <script>
         const API_URL = 'https://sil-lab-backend.vercel.app/api';
         const token = localStorage.getItem('token');
-
-        // 1. Cek Auth
-        if (!token) {
-            window.location.href = 'index.html';
-        }
-
-        // Tampilkan Nama User
+        if (!token) window.location.href = 'index.html';
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        document.getElementById('userName').innerText = user.email || 'User';
+        document.getElementById('userName').innerText = user.nama || user.email || 'User';
 
-        // 2. Load Data Peminjaman
-        async function loadBookings() {
+        // --- FUNGSI BARU: Muat Pilihan Ruangan ---
+        async function loadRoomOptions() {
             try {
-                const res = await fetch(`${API_URL}/booking`, {
+                const res = await fetch(`${API_URL}/rooms`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const data = await res.json();
+                const rooms = await res.json();
+                const selectEl = document.getElementById('ruangId');
+                selectEl.innerHTML = '<option value="" disabled selected>-- Pilih Ruangan --</option>'; // Reset
                 
-                const tableBody = document.getElementById('bookingTableBody');
-                tableBody.innerHTML = '';
-
-                data.forEach(booking => {
-                    // Styling Status badge
-                    let statusColor = 'bg-yellow-200 text-yellow-800';
-                    if(booking.status === 'disetujui') statusColor = 'bg-green-200 text-green-800';
-                    if(booking.status === 'ditolak') statusColor = 'bg-red-200 text-red-800';
-
-                    // Format Tanggal
-                    const start = new Date(booking.waktu_mulai).toLocaleString();
-                    
-                    const row = `
-                        <tr class="border-b border-gray-200 hover:bg-gray-100">
-                            <td class="py-3 px-6 text-left font-medium">${booking.ruangan ? booking.ruangan.nama_ruang : 'ID: ' + booking.ruang_id}</td>
-                            <td class="py-3 px-6 text-left">${start}</td>
-                            <td class="py-3 px-6 text-center">
-                                <span class="${statusColor} py-1 px-3 rounded-full text-xs">${booking.status}</span>
-                            </td>
-                             <td class="py-3 px-6 text-center">
-                                <button class="text-blue-500 hover:text-blue-700">Detail</button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
+                rooms.forEach(room => {
+                    const option = `<option value="${room.id}">${room.nama_ruang} (Kapasitas: ${room.kapasitas})</option>`;
+                    selectEl.innerHTML += option;
                 });
             } catch (error) {
-                console.error('Gagal memuat data:', error);
+                console.error('Gagal memuat opsi ruangan:', error);
+                document.getElementById('ruangId').innerHTML = '<option value="" disabled>Gagal memuat ruangan</option>';
             }
         }
 
-        // 3. Handle Submit Form
+        // --- Load Data Peminjaman (Riwayat) ---
+        async function loadBookings() {
+            try {
+                const res = await fetch(`${API_URL}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                const tableBody = document.getElementById('bookingTableBody');
+                tableBody.innerHTML = '';
+                data.forEach(booking => {
+                    let statusColor = 'bg-yellow-200 text-yellow-800';
+                    if(booking.status === 'disetujui') statusColor = 'bg-green-200 text-green-800';
+                    if(booking.status === 'ditolak') statusColor = 'bg-red-200 text-red-800';
+                    const start = new Date(booking.waktu_mulai).toLocaleString();
+                    const row = `
+                        <tr class="border-b border-gray-200 hover:bg-gray-100">
+                            <td class="py-3 px-6 font-medium">${booking.ruangan ? booking.ruangan.nama_ruang : 'N/A'}</td>
+                            <td class="py-3 px-6">${start}</td>
+                            <td class="py-3 px-6 text-center">
+                                <span class="${statusColor} py-1 px-3 rounded-full text-xs">${booking.status}</span>
+                            </td>
+                        </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) { console.error('Gagal memuat data:', error); }
+        }
+
+        // --- Handle Submit Form ---
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const payload = {
-                ruang_id: document.getElementById('ruangId').value,
+                ruang_id: document.getElementById('ruangId').value, // Nilai sudah dari dropdown
                 waktu_mulai: new Date(document.getElementById('waktuMulai').value).toISOString(),
                 waktu_selesai: new Date(document.getElementById('waktuSelesai').value).toISOString(),
                 tujuan_peminjaman: document.getElementById('tujuan').value
@@ -127,35 +133,28 @@
             try {
                 const res = await fetch(`${API_URL}/booking`, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify(payload)
                 });
-
                 const result = await res.json();
                 if (res.ok) {
                     alert('Pengajuan berhasil!');
-                    loadBookings(); // Refresh tabel
+                    loadBookings();
                     document.getElementById('bookingForm').reset();
                 } else {
                     alert(result.error);
                 }
-            } catch (error) {
-                alert('Terjadi kesalahan sistem');
-            }
+            } catch (error) { alert('Terjadi kesalahan sistem'); }
         });
 
-        // 4. Logout
         function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            localStorage.clear();
             window.location.href = 'index.html';
         }
 
         // Jalankan saat halaman dimuat
         loadBookings();
+        loadRoomOptions(); // Panggil fungsi baru untuk mengisi dropdown
     </script>
 </body>
 </html>
