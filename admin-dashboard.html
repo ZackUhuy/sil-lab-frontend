@@ -49,19 +49,33 @@
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mulai</label>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mulai (Sesi 1)</label>
                                 <input type="datetime-local" id="jadwal_mulai" class="w-full p-2 border rounded bg-gray-50 text-sm" required>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Selesai</label>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Selesai (Sesi 1)</label>
                                 <input type="datetime-local" id="jadwal_selesai" class="w-full p-2 border rounded bg-gray-50 text-sm" required>
                             </div>
                         </div>
+
+                        <!-- FITUR ULANGI MINGGUAN -->
+                        <div class="bg-blue-50 p-3 rounded border border-blue-100">
+                            <div class="flex items-center mb-2">
+                                <input type="checkbox" id="is_repeat" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer" onchange="toggleRepeatInput()">
+                                <label for="is_repeat" class="ml-2 text-sm font-medium text-gray-700 cursor-pointer">Ulangi Jadwal (Mingguan)?</label>
+                            </div>
+                            <div id="repeat_input_container" class="hidden mt-2">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Jumlah Minggu</label>
+                                <input type="number" id="repeat_count" class="w-full p-2 border rounded bg-white text-sm" value="16" min="2" max="20" placeholder="Contoh: 16">
+                                <p class="text-xs text-gray-400 mt-1 italic">*Jadwal akan diduplikasi setiap 7 hari.</p>
+                            </div>
+                        </div>
+
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Keterangan Kegiatan</label>
                             <textarea id="jadwal_tujuan" class="w-full p-2 border rounded bg-gray-50 text-sm" rows="2" placeholder="Contoh: Kuliah Algoritma A" required></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 font-medium shadow">Simpan Jadwal</button>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 font-medium shadow transition">Simpan Jadwal</button>
                     </form>
                 </div>
 
@@ -221,7 +235,14 @@
             } catch(e) { alert(e.message); }
         }
 
-        // --- JADWAL ---
+        // --- JADWAL LOGIC ---
+        function toggleRepeatInput() {
+            const isChecked = document.getElementById('is_repeat').checked;
+            const container = document.getElementById('repeat_input_container');
+            if (isChecked) container.classList.remove('hidden');
+            else container.classList.add('hidden');
+        }
+
         async function loadRuangOptions() {
             const res = await fetch(`${API_URL}/rooms`, { headers: { 'Authorization': `Bearer ${token}` } });
             const data = await res.json();
@@ -272,12 +293,23 @@
 
         async function handleTambahJadwal(e) {
             e.preventDefault();
+            
+            const isRepeat = document.getElementById('is_repeat').checked;
+            const repeatCount = document.getElementById('repeat_count').value;
+
             const payload = {
                 ruang_id: document.getElementById('jadwal_ruang_id').value,
                 waktu_mulai: new Date(document.getElementById('jadwal_mulai').value).toISOString(),
                 waktu_selesai: new Date(document.getElementById('jadwal_selesai').value).toISOString(),
-                tujuan_peminjaman: document.getElementById('jadwal_tujuan').value
+                tujuan_peminjaman: document.getElementById('jadwal_tujuan').value,
+                is_repeat: isRepeat,
+                repeat_count: isRepeat ? parseInt(repeatCount) : 1
             };
+
+            const btn = e.target.querySelector('button');
+            const oldText = btn.innerText;
+            btn.innerText = 'Memproses...'; btn.disabled = true;
+
             try {
                 const res = await fetch(`${API_URL}/booking/admin`, {
                     method: 'POST',
@@ -286,8 +318,11 @@
                 });
                 const r = await res.json();
                 if(!res.ok) throw new Error(r.error);
-                alert('Jadwal berhasil ditambahkan!'); e.target.reset(); loadAllBookings();
+                alert(r.message); e.target.reset(); 
+                document.getElementById('repeat_input_container').classList.add('hidden');
+                loadAllBookings();
             } catch(err) { alert('Gagal: ' + err.message); }
+            finally { btn.innerText = oldText; btn.disabled = false; }
         }
 
         async function updateStatus(id, status) {
@@ -327,8 +362,7 @@
                 lokasi: document.getElementById('lokasi').value
             };
             try {
-                const res = await fetch(`${API_URL}/rooms`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
-                if(!res.ok) throw new Error('Gagal');
+                await fetch(`${API_URL}/rooms`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
                 alert('Sukses!'); e.target.reset(); loadRuangan(); loadRuangOptions();
             } catch(e) { alert('Gagal menambah ruangan'); }
         }
