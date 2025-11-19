@@ -193,7 +193,7 @@
             activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow');
             activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-100');
         }
-        showTab('booking'); // Default tab
+        showTab('booking'); 
 
         // --- MODAL LOGIC ---
         function toggleModal() {
@@ -226,7 +226,6 @@
                 globalEquipment.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.id;
-                    // Tampilkan jumlah tersedia untuk info user
                     option.textContent = `${item.nama_alat} (${item.jumlah_tersedia} tersedia)`;
                     selectEl.appendChild(option);
                 });
@@ -274,7 +273,6 @@
                 return;
             }
 
-            // Tambahkan/Update ke objek selectedEquipment
             selectedEquipment[alatId] = { id: alatId, jumlah: jumlah };
             
             document.getElementById('selectAlat').value = ''; 
@@ -291,14 +289,15 @@
         // --- LOGIKA STATUS RUANGAN (DIPERBAIKI) ---
         async function loadRoomStatus() {
             const container = document.getElementById('roomStatusContainer');
-            // Tampilkan loading state
             container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Memuat data ruangan dan jadwal...</div>';
             
             try {
-                // Panggil kedua API secara paralel
+                // --- PERBAIKAN PENTING: Mengganti URL API ---
                 const [roomsRes, schedulesRes] = await Promise.all([
-                    fetch(`${API_URL}/room`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                    fetch(`${API_URL}/booking/public`, { headers: { 'Authorization': `Bearer ${token}` } })
+                    // Menggunakan endpoint yang benar: /rooms
+                    fetch(`${API_URL}/rooms`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                    // Menggunakan endpoint yang benar: /booking/schedule
+                    fetch(`${API_URL}/booking/schedule`, { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
 
                 if (!roomsRes.ok) throw new Error('Gagal memuat data ruangan.');
@@ -317,10 +316,8 @@
 
                 // Render Kartu Status Ruangan
                 globalRooms.forEach(room => {
-                    // Cek apakah ruangan sedang digunakan saat ini
                     const now = new Date();
                     const isBusy = globalSchedules.some(schedule => {
-                        // Pastikan jadwal sudah disetujui (API public sudah filter, tapi untuk jaga-jaga)
                         return schedule.ruang_id === room.id && 
                                 new Date(schedule.waktu_mulai) <= now && 
                                 new Date(schedule.waktu_selesai) >= now;
@@ -357,18 +354,16 @@
             }
         }
         
-        // --- LOGIKA MODAL JADWAL (DILENGKAPI) ---
+        // --- LOGIKA MODAL JADWAL ---
         function openScheduleModal(roomId, roomName) {
             document.getElementById('modalRoomName').textContent = roomName;
             const listEl = document.getElementById('modalScheduleList');
             const emptyEl = document.getElementById('modalEmptyState');
             listEl.innerHTML = '';
 
-            // Filter jadwal yang disetujui untuk ruangan ini yang MASIH AKAN BERLANGSUNG
             const now = new Date();
             const roomSchedules = globalSchedules
                 .filter(s => s.ruang_id === roomId && new Date(s.waktu_selesai) >= now)
-                // Urutkan berdasarkan waktu mulai terdekat
                 .sort((a, b) => new Date(a.waktu_mulai) - new Date(b.waktu_mulai));
 
             if (roomSchedules.length === 0) {
@@ -410,7 +405,6 @@
                     
                     const dateStr = new Date(b.waktu_mulai).toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
                     
-                    // Ambil daftar alat
                     const alatList = b.peminjaman_detail_alat && b.peminjaman_detail_alat.length > 0 
                         ? b.peminjaman_detail_alat.map(d => `${d.jumlah_pinjam}x ${d.peralatan.nama_alat}`).join(', ')
                         : 'N/A';
@@ -429,7 +423,6 @@
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Konversi selectedEquipment object ke array yang dibutuhkan backend
             const alatArray = Object.values(selectedEquipment);
 
             const payload = {
@@ -437,7 +430,7 @@
                 waktu_mulai: new Date(document.getElementById('waktuMulai').value).toISOString(),
                 waktu_selesai: new Date(document.getElementById('waktuSelesai').value).toISOString(),
                 tujuan_peminjaman: document.getElementById('tujuan').value,
-                alat_ids: alatArray // Kirim array alat
+                alat_ids: alatArray 
             };
 
             try {
@@ -446,10 +439,10 @@
                 if(res.ok) { 
                     alert('✅ Pengajuan Berhasil dikirim! Menunggu persetujuan Admin.'); 
                     e.target.reset(); 
-                    selectedEquipment = {}; // Reset alat
+                    selectedEquipment = {}; 
                     renderSelectedEquipment();
                     loadBookings(); 
-                    loadRoomStatus(); // Refresh status setelah booking berhasil
+                    loadRoomStatus(); 
                 }
                 else { alert('❌ Gagal: ' + result.error); }
             } catch(e) { alert('Terjadi kesalahan koneksi ke server.'); }
@@ -458,7 +451,7 @@
         function logout() { localStorage.clear(); window.location.href='/'; }
 
         // --- INISIALISASI ---
-        loadRoomStatus(); // Sekarang ini memuat ruangan dan jadwal!
+        loadRoomStatus();
         loadBookings();
         loadEquipmentOptions(); 
     </script>
