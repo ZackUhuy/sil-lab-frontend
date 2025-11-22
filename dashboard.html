@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <!-- === TAB 2: PINJAM ALAT SAJA (DIPERBARUI) === -->
+        <!-- === TAB 2: PINJAM ALAT SAJA === -->
         <div id="content-alat_only" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
@@ -112,7 +112,7 @@
                     </form>
                 </div>
 
-                <!-- TABEL STOK REALTIME (BARU) -->
+                <!-- TABEL STOK REALTIME -->
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
                     <div class="flex justify-between items-center mb-4 border-b pb-2">
                         <h3 class="font-bold text-gray-700 flex items-center gap-2">📦 Info Stok Alat Real-time</h3>
@@ -129,9 +129,7 @@
                                     <th class="py-3 px-4 text-center">Kondisi</th>
                                 </tr>
                             </thead>
-                            <tbody id="stockTableBody" class="text-gray-600 text-sm divide-y divide-gray-100">
-                                <!-- Data Stok -->
-                            </tbody>
+                            <tbody id="stockTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody>
                         </table>
                     </div>
                 </div>
@@ -190,9 +188,14 @@
             document.getElementById(`content-${tabName}`).classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('bg-blue-600', 'text-white', 'shadow');
             document.getElementById(`tab-${tabName}`).classList.remove('text-gray-600', 'hover:bg-gray-100');
-        }
-        showTab('booking');
 
+            // --- AUTO REFRESH SAAT GANTI TAB (FIX) ---
+            if (tabName === 'booking') { loadBookings(); loadRoomStatus(); }
+            else if (tabName === 'alat_only') { loadEquipmentOptions(); loadBookings(); }
+            else if (tabName === 'ruangan') { loadRoomStatus(); }
+            else if (tabName === 'laporan') { loadMyReports(); loadEquipmentOptions(); }
+        }
+        
         // --- LOAD DATA & UPDATE UI ---
         async function loadEquipmentOptions() {
              try {
@@ -210,7 +213,6 @@
                 tableStock.innerHTML = '';
 
                 globalEquipment.forEach(item => {
-                    // Dropdown logic
                     const label = `${item.nama_alat} (Sisa: ${item.jumlah_tersedia})`;
                     if (item.jumlah_tersedia > 0) {
                         selRoom.innerHTML += `<option value="${item.id}">${label}</option>`;
@@ -218,7 +220,6 @@
                     }
                     selLapor.innerHTML += `<option value="${item.id}">${item.nama_alat}</option>`;
 
-                    // Update Tabel Stok Realtime
                     const sisaColor = item.jumlah_tersedia === 0 ? 'text-red-600 font-bold' : (item.jumlah_tersedia < 5 ? 'text-orange-500 font-bold' : 'text-green-600 font-bold');
                     const row = `
                         <tr class="hover:bg-gray-50 border-b">
@@ -296,7 +297,12 @@
         document.getElementById('reportForm').addEventListener('submit', async (e) => { e.preventDefault(); await fetch(`${API_URL}/reports`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ alat_id: document.getElementById('laporAlatId').value, deskripsi_kerusakan: document.getElementById('deskripsiKerusakan').value }) }); alert('Terkirim'); e.target.reset(); loadMyReports(); });
 
         function logout() { localStorage.clear(); window.location.href = '/'; }
-        loadInitialData(); // Init all
+        
+        // --- INITIAL LOAD ---
+        // Panggil saat pertama kali load
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('booking'); // Tab default
+        });
     </script>
 </body>
 </html>
