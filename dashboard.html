@@ -33,91 +33,78 @@
     <div class="container mx-auto p-6 max-w-7xl flex-grow">
 
         <!-- Navigasi Tab -->
-        <div class="mb-6 bg-white rounded-lg shadow-sm p-1 flex space-x-1">
-            <button onclick="showTab('booking')" id="tab-booking" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center bg-blue-600 text-white shadow transition">
+        <div class="mb-6 bg-white rounded-lg shadow-sm p-1 flex space-x-1 overflow-x-auto">
+            <button onclick="showTab('booking')" id="tab-booking" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center bg-blue-600 text-white shadow transition whitespace-nowrap">
                 📝 Form & Riwayat
             </button>
-            <button onclick="showTab('ruangan')" id="tab-ruangan" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition">
-                🏢 Info & Jadwal Ruangan
+            <button onclick="showTab('ruangan')" id="tab-ruangan" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
+                🏢 Info & Jadwal
+            </button>
+            <!-- TAB BARU -->
+            <button onclick="showTab('laporan')" id="tab-laporan" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
+                ⚠️ Lapor Kerusakan
             </button>
         </div>
 
         <!-- === TAB 1: BOOKING & RIWAYAT === -->
         <div id="content-booking" class="tab-content active">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
                 <!-- Form Peminjaman (KIRI) -->
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-gray-100">
                     <h2 class="text-xl font-bold mb-6 text-gray-800">Ajukan Peminjaman</h2>
                     <form id="bookingForm" class="space-y-4">
-                        
-                        <!-- 1. Pilihan Ruangan -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Ruangan yang dibutuhkan</label>
-                            <select id="ruangId" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50" required>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ruangan</label>
+                            <select id="ruangId" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50" required>
                                 <option value="" disabled selected>-- Pilih Ruangan --</option>
                             </select>
                         </div>
-
-                        <!-- 2. Waktu -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Mulai</label>
-                                <input type="datetime-local" id="waktuMulai" class="w-full p-2 border border-gray-300 rounded-lg text-sm" required>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label>
+                                <input type="datetime-local" id="waktuMulai" class="w-full p-2 border rounded-lg text-sm" required>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Selesai</label>
-                                <input type="datetime-local" id="waktuSelesai" class="w-full p-2 border border-gray-300 rounded-lg text-sm" required>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label>
+                                <input type="datetime-local" id="waktuSelesai" class="w-full p-2 border rounded-lg text-sm" required>
                             </div>
                         </div>
-
-                        <!-- 3. Peminjaman Alat -->
+                        <!-- Alat Opsional -->
                         <div class="border border-yellow-300 bg-yellow-50 p-4 rounded-lg">
-                            <h3 class="font-bold text-base text-yellow-800 mb-2">Tambahkan Peralatan (Opsional)</h3>
-                            
-                            <div id="equipmentList" class="space-y-2 mb-4">
-                                <!-- Item Alat yang sudah dipilih akan muncul di sini -->
-                            </div>
-
+                            <h3 class="font-bold text-base text-yellow-800 mb-2">Alat (Opsional)</h3>
+                            <div id="equipmentList" class="space-y-2 mb-4"></div>
                             <div class="flex space-x-2">
-                                <select id="selectAlat" class="flex-grow p-2 border border-gray-300 rounded-lg text-sm bg-white" onchange="document.getElementById('jumlahAlat').value = 1;">
+                                <select id="selectAlat" class="flex-grow p-2 border rounded-lg text-sm bg-white">
                                     <option value="" disabled selected>Pilih Alat...</option>
-                                    <!-- Daftar alat akan dimuat di sini -->
                                 </select>
-                                <input type="number" id="jumlahAlat" placeholder="Jml" min="1" value="1" class="w-16 p-2 border border-gray-300 rounded-lg text-sm">
-                                <button type="button" onclick="addEquipment()" class="bg-yellow-500 text-white p-2 rounded-lg text-sm hover:bg-yellow-600 transition">Tambah</button>
+                                <input type="number" id="jumlahAlat" min="1" value="1" class="w-16 p-2 border rounded-lg text-sm">
+                                <button type="button" onclick="addEquipment()" class="bg-yellow-500 text-white p-2 rounded-lg text-sm hover:bg-yellow-600">Tambah</button>
                             </div>
                         </div>
-
-                        <!-- 4. Tujuan -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tujuan</label>
-                            <textarea id="tujuan" class="w-full p-3 border border-gray-300 rounded-lg text-sm" rows="3" placeholder="Contoh: Praktikum Fisika Dasar" required></textarea>
+                            <textarea id="tujuan" class="w-full p-3 border rounded-lg text-sm" rows="3" required></textarea>
                         </div>
-                        
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition transform active:scale-95">
-                            Kirim Pengajuan
-                        </button>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">Kirim Pengajuan</button>
                     </form>
                 </div>
 
                 <!-- Riwayat (KANAN) -->
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-gray-800">Riwayat Peminjaman Saya</h2>
-                        <button onclick="loadBookings()" class="text-sm text-blue-500 hover:text-blue-700 font-medium">Refresh Data</button>
+                        <h2 class="text-xl font-bold text-gray-800">Riwayat Peminjaman</h2>
+                        <button onclick="loadBookings()" class="text-sm text-blue-500 hover:text-blue-700 font-medium">Refresh</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white">
-                            <thead class="bg-gray-50 border-b border-gray-200">
+                            <thead class="bg-gray-50 border-b">
                                 <tr class="text-gray-600 text-xs uppercase tracking-wider text-left">
                                     <th class="py-3 px-4 font-semibold">Ruangan</th>
-                                    <th class="py-3 px-4 font-semibold">Alat Dipinjam</th>
                                     <th class="py-3 px-4 font-semibold">Waktu</th>
                                     <th class="py-3 px-4 font-semibold text-center">Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="bookingTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody>
+                            <tbody id="bookingTableBody" class="text-gray-600 text-sm divide-y"></tbody>
                         </table>
                     </div>
                 </div>
@@ -127,44 +114,74 @@
         <!-- === TAB 2: DAFTAR RUANGAN === -->
         <div id="content-ruangan" class="tab-content">
             <div class="mb-6 flex justify-between items-end border-b pb-2 border-gray-200">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Status Ruangan Real-time</h2>
-                    <p class="text-sm text-gray-500">Klik kartu untuk melihat detail jadwal ruangan.</p>
-                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Status Ruangan Real-time</h2>
                 <button onclick="loadRoomStatus()" class="text-blue-600 text-sm hover:underline flex items-center gap-1">🔄 Refresh</button>
             </div>
-
-            <div id="roomStatusContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                <!-- Kartu Ruangan dimuat di sini -->
-            </div>
+            <div id="roomStatusContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
         </div>
-    </div>
 
-    <!-- === MODAL POPUP JADWAL === -->
-    <div id="scheduleModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
-        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50" onclick="toggleModal()"></div>
-        
-        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[80vh] transform transition-all scale-95">
-            <div class="modal-content py-4 text-left px-6">
-                <div class="flex justify-between items-center pb-3 border-b">
-                    <p class="text-xl font-bold text-gray-800" id="modalRoomName">Nama Ruangan</p>
-                    <div class="cursor-pointer z-50 text-gray-500 hover:text-red-500" onclick="toggleModal()">
-                        <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg>
+        <!-- === TAB 3: LAPOR KERUSAKAN (BARU) === -->
+        <div id="content-laporan" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Form Lapor -->
+                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-red-100">
+                    <h2 class="text-xl font-bold mb-6 text-red-700 flex items-center gap-2">
+                        ⚠️ Form Lapor Kerusakan
+                    </h2>
+                    <form id="reportForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Alat yang Rusak</label>
+                            <select id="laporAlatId" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50" required>
+                                <option value="" disabled selected>Memuat daftar alat...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Kerusakan</label>
+                            <textarea id="deskripsiKerusakan" class="w-full p-3 border border-gray-300 rounded-lg text-sm" rows="4" placeholder="Contoh: Layar monitor tidak mau menyala, kabel putus..." required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition">
+                            Kirim Laporan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Riwayat Laporan -->
+                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">Riwayat Laporan Saya</h2>
+                        <button onclick="loadMyReports()" class="text-sm text-blue-500 hover:text-blue-700 font-medium">Refresh</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-50 border-b">
+                                <tr class="text-gray-600 text-xs uppercase tracking-wider text-left">
+                                    <th class="py-3 px-4 font-semibold">Tanggal</th>
+                                    <th class="py-3 px-4 font-semibold">Nama Alat</th>
+                                    <th class="py-3 px-4 font-semibold">Masalah</th>
+                                    <th class="py-3 px-4 font-semibold text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody" class="text-gray-600 text-sm divide-y">
+                                <tr><td colspan="4" class="py-4 text-center italic text-gray-400">Belum ada laporan.</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-                <div class="my-5">
-                    <h4 class="font-semibold text-gray-600 mb-3 text-sm uppercase tracking-wide">Jadwal Terkonfirmasi:</h4>
-                    <ul id="modalScheduleList" class="space-y-2 text-sm max-h-60 overflow-y-auto pr-2">
-                        <!-- List Jadwal -->
-                    </ul>
-                    <p id="modalEmptyState" class="text-gray-400 italic text-center mt-4 hidden text-sm">Tidak ada jadwal aktif saat ini.</p>
-                </div>
-
-                <div class="flex justify-end pt-2 border-t">
-                    <button onclick="toggleModal()" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 text-sm font-medium transition">Tutup</button>
-                </div>
             </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL JADWAL -->
+    <div id="scheduleModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50" onclick="toggleModal()"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[80vh] transform transition-all scale-95 p-6">
+            <div class="flex justify-between items-center pb-3 border-b">
+                <p class="text-xl font-bold text-gray-800" id="modalRoomName">Nama Ruangan</p>
+                <button onclick="toggleModal()" class="text-red-500 font-bold">✕</button>
+            </div>
+            <ul id="modalScheduleList" class="space-y-2 mt-4 text-sm"></ul>
+            <p id="modalEmptyState" class="text-gray-400 italic text-center mt-4 hidden text-sm">Tidak ada jadwal aktif.</p>
         </div>
     </div>
 
@@ -177,11 +194,11 @@
         document.getElementById('userName').innerText = user.nama || user.email || 'User';
 
         let globalRooms = [];
-        let globalSchedules = []; 
-        let globalEquipment = []; 
-        let selectedEquipment = {}; 
+        let globalSchedules = [];
+        let globalEquipment = [];
+        let selectedEquipment = {};
 
-        // --- NAVIGASI TAB ---
+        // --- TAB ---
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(b => {
@@ -193,283 +210,185 @@
             activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow');
             activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-100');
         }
-        showTab('booking'); 
+        showTab('booking');
 
-        // --- MODAL LOGIC ---
-        function toggleModal() {
-            const body = document.querySelector('body');
-            const modal = document.querySelector('.modal');
-            const container = document.querySelector('.modal-container');
-            
-            modal.classList.toggle('opacity-0');
-            modal.classList.toggle('pointer-events-none');
-            body.classList.toggle('modal-active');
-            
-            if (!modal.classList.contains('opacity-0')) {
-                container.classList.remove('scale-95');
-                container.classList.add('scale-100');
-            } else {
-                container.classList.add('scale-95');
-                container.classList.remove('scale-100');
-            }
-        }
-
-        // --- EQUIPMENT LOGIC ---
+        // --- EQUIPMENT ---
         async function loadEquipmentOptions() {
              try {
                 const res = await fetch(`${API_URL}/equipment`, { headers: { 'Authorization': `Bearer ${token}` } });
                 globalEquipment = await res.json();
-                const selectEl = document.getElementById('selectAlat');
                 
-                selectEl.innerHTML = '<option value="" disabled selected>Pilih Alat...</option>';
+                // 1. Isi Select untuk Booking
+                const selectBooking = document.getElementById('selectAlat');
+                selectBooking.innerHTML = '<option value="" disabled selected>Pilih Alat...</option>';
                 
+                // 2. Isi Select untuk Laporan Kerusakan (BARU)
+                const selectLapor = document.getElementById('laporAlatId');
+                selectLapor.innerHTML = '<option value="" disabled selected>Pilih Alat Rusak...</option>';
+
                 globalEquipment.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = `${item.nama_alat} (${item.jumlah_tersedia} tersedia)`;
-                    selectEl.appendChild(option);
+                    // Untuk Booking (hanya yang tersedia)
+                    const opt1 = document.createElement('option');
+                    opt1.value = item.id;
+                    opt1.textContent = `${item.nama_alat} (${item.jumlah_tersedia} tersedia)`;
+                    selectBooking.appendChild(opt1);
+
+                    // Untuk Laporan (Semua alat bisa dilaporkan rusak)
+                    const opt2 = document.createElement('option');
+                    opt2.value = item.id;
+                    opt2.textContent = `${item.nama_alat} - ${item.kategori}`;
+                    selectLapor.appendChild(opt2);
                 });
-            } catch (error) {
-                console.error('Gagal memuat peralatan:', error);
-            }
+            } catch (error) { console.error('Gagal memuat peralatan:', error); }
         }
 
-        function renderSelectedEquipment() {
-            const listContainer = document.getElementById('equipmentList');
-            listContainer.innerHTML = '';
-            
-            for (const alatId in selectedEquipment) {
-                const item = selectedEquipment[alatId];
-                const equipmentData = globalEquipment.find(e => e.id === alatId);
+        // --- FUNGSI LAPOR KERUSAKAN (BARU) ---
+        async function loadMyReports() {
+            try {
+                const res = await fetch(`${API_URL}/reports/my`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                const tbody = document.getElementById('reportTableBody');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center italic text-gray-400">Belum ada laporan.</td></tr>';
+                    return;
+                }
+
+                data.forEach(item => {
+                    let statusColor = 'bg-yellow-100 text-yellow-800'; // Baru
+                    if(item.status_laporan === 'diproses') statusColor = 'bg-blue-100 text-blue-800';
+                    if(item.status_laporan === 'selesai') statusColor = 'bg-green-100 text-green-800';
+
+                    const row = `
+                        <tr class="hover:bg-gray-50 border-b transition">
+                            <td class="py-3 px-4 text-gray-600 whitespace-nowrap">${new Date(item.tanggal_lapor).toLocaleDateString('id-ID')}</td>
+                            <td class="py-3 px-4 font-medium text-gray-800">${item.peralatan?.nama_alat || 'Unknown'}</td>
+                            <td class="py-3 px-4 text-gray-600 truncate max-w-xs" title="${item.deskripsi_kerusakan}">${item.deskripsi_kerusakan}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="${statusColor} px-2 py-1 rounded-full text-xs font-bold uppercase">${item.status_laporan}</span>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) { console.error('Gagal load laporan:', error); }
+        }
+
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                alat_id: document.getElementById('laporAlatId').value,
+                deskripsi_kerusakan: document.getElementById('deskripsiKerusakan').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
                 
-                if (!equipmentData) continue;
+                if (res.ok) {
+                    alert('Laporan kerusakan berhasil dikirim! Terima kasih.');
+                    e.target.reset();
+                    loadMyReports();
+                } else {
+                    const err = await res.json();
+                    alert('Gagal: ' + err.error);
+                }
+            } catch (e) { alert('Terjadi kesalahan koneksi.'); }
+        });
 
-                const listItem = document.createElement('div');
-                listItem.className = 'flex justify-between items-center bg-white p-2 rounded-lg border border-yellow-200 shadow-sm';
-                listItem.innerHTML = `
-                    <span class="font-medium text-sm text-gray-700">${equipmentData.nama_alat}</span>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-sm font-bold text-blue-600">${item.jumlah} Unit</span>
-                        <button type="button" onclick="removeEquipment('${alatId}')" class="text-red-500 hover:text-red-700 text-base leading-none">
-                            &times;
-                        </button>
-                    </div>
-                `;
-                listContainer.appendChild(listItem);
-            }
-        }
-
+        // --- FUNGSI BOOKING (LAMA) ---
         function addEquipment() {
             const alatId = document.getElementById('selectAlat').value;
             const jumlah = parseInt(document.getElementById('jumlahAlat').value);
             const equipmentData = globalEquipment.find(e => e.id === alatId);
-
-            if (!alatId || isNaN(jumlah) || jumlah <= 0) {
-                alert('Pilih alat dan masukkan jumlah yang valid.');
-                return;
-            }
-            if (equipmentData.jumlah_tersedia < jumlah) {
-                alert(`Gagal! Hanya tersedia ${equipmentData.jumlah_tersedia} unit ${equipmentData.nama_alat}.`);
-                return;
-            }
-
+            if (!alatId || isNaN(jumlah) || jumlah <= 0) return alert('Pilih alat & jumlah valid.');
+            if (equipmentData.jumlah_tersedia < jumlah) return alert(`Hanya tersedia ${equipmentData.jumlah_tersedia} unit.`);
             selectedEquipment[alatId] = { id: alatId, jumlah: jumlah };
-            
-            document.getElementById('selectAlat').value = ''; 
-            document.getElementById('jumlahAlat').value = 1; 
-            
             renderSelectedEquipment();
         }
-
-        function removeEquipment(alatId) {
-            delete selectedEquipment[alatId];
-            renderSelectedEquipment();
-        }
-        
-        // --- LOGIKA STATUS RUANGAN (FIX MAINTENANCE) ---
-        async function loadRoomStatus() {
-            const container = document.getElementById('roomStatusContainer');
-            container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Memuat data ruangan dan jadwal...</div>';
-            
-            try {
-                const [roomsRes, schedulesRes] = await Promise.all([
-                    fetch(`${API_URL}/rooms`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                    fetch(`${API_URL}/booking/schedule`, { headers: { 'Authorization': `Bearer ${token}` } })
-                ]);
-
-                if (!roomsRes.ok) throw new Error('Gagal memuat data ruangan.');
-                if (!schedulesRes.ok) throw new Error('Gagal memuat data jadwal publik.');
-
-                globalRooms = await roomsRes.json();
-                globalSchedules = await schedulesRes.json();
-
-                // Bersihkan loading message
-                container.innerHTML = ''; 
-                const selectEl = document.getElementById('ruangId');
-                selectEl.innerHTML = '<option value="" disabled selected>-- Pilih Ruangan --</option>';
-
-                if (globalRooms.length === 0) {
-                    container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-400 italic">Belum ada ruangan yang terdaftar.</div>';
-                    return;
-                }
-
-                // Render Kartu
-                globalRooms.forEach(room => {
-                    
-                    // --- LOGIKA MAINTENANCE BARU ---
-                    if (room.status === 'maintenance') {
-                        // Jika maintenance: Tampilkan kartu oranye & JANGAN masukkan ke dropdown
-                        const card = `
-                            <div class="bg-orange-50 p-5 rounded-xl shadow-sm border-l-4 border-orange-400 opacity-80 cursor-not-allowed">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="text-lg font-bold text-gray-700">${room.nama_ruang}</h3>
-                                    <div class="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-500 text-white shadow-sm">
-                                        🛠️ PERBAIKAN
-                                    </div>
-                                </div>
-                                <p class="text-sm text-gray-500 mt-1">Ruangan tidak dapat digunakan.</p>
-                            </div>
-                        `;
-                        container.innerHTML += card;
-                        return; // Skip sisa logika (tidak masuk dropdown)
-                    }
-                    // -------------------------------
-
-                    // Jika Tersedia, masukkan ke dropdown
-                    selectEl.innerHTML += `<option value="${room.id}">${room.nama_ruang} (${room.kapasitas} orang)</option>`;
-
-                    // Cek Jadwal (Merah/Hijau)
-                    const now = new Date();
-                    const isBusy = globalSchedules.some(schedule => {
-                        return schedule.ruang_id === room.id && 
-                                new Date(schedule.waktu_mulai) <= now && 
-                                new Date(schedule.waktu_selesai) >= now;
-                    });
-
-                    const statusClass = isBusy ? 'bg-red-50 border-red-500 text-red-700' : 'bg-green-50 border-green-500 text-green-700';
-                    const statusText = isBusy ? 'SEDANG DIPAKAI' : 'TERSEDIA';
-                    
-                    // Tambahkan border-l-4 agar konsisten dengan desain
-                    const card = `
-                        <div onclick="openScheduleModal('${room.id}', '${room.nama_ruang}')" class="bg-white p-5 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition transform hover:scale-[1.02] border-l-4 ${statusClass.replace('bg-', 'border-')}">
-                            <div class="flex justify-between items-start">
-                                <h3 class="text-lg font-bold text-gray-800">${room.nama_ruang}</h3>
-                                <div class="text-xs font-semibold px-2 py-0.5 rounded-full ${isBusy ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}">
-                                    ${statusText}
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1">Kapasitas: ${room.kapasitas} Orang</p>
-                        </div>
-                    `;
-                    container.innerHTML += card;
-                });
-
-            } catch (error) {
-                console.error('Error loading room status:', error);
-                container.innerHTML = `<div class="col-span-full text-center py-8 text-red-500">Gagal memuat data: ${error.message}. Pastikan Backend sudah ter-deploy dan API berjalan.</div>`;
+        function removeEquipment(id) { delete selectedEquipment[id]; renderSelectedEquipment(); }
+        function renderSelectedEquipment() {
+            const container = document.getElementById('equipmentList'); container.innerHTML = '';
+            for (const id in selectedEquipment) {
+                const item = globalEquipment.find(e => e.id === id);
+                container.innerHTML += `<div class="flex justify-between bg-white p-2 border rounded mb-1 text-sm"><span>${item.nama_alat}</span><span class="font-bold text-blue-600">${selectedEquipment[id].jumlah} Unit <button onclick="removeEquipment('${id}')" class="text-red-500 ml-2">x</button></span></div>`;
             }
         }
-        
-        // --- LOGIKA MODAL JADWAL ---
-        function openScheduleModal(roomId, roomName) {
-            document.getElementById('modalRoomName').textContent = roomName;
-            const listEl = document.getElementById('modalScheduleList');
-            const emptyEl = document.getElementById('modalEmptyState');
-            listEl.innerHTML = '';
 
-            const now = new Date();
-            const roomSchedules = globalSchedules
-                .filter(s => s.ruang_id === roomId && new Date(s.waktu_selesai) >= now)
-                .sort((a, b) => new Date(a.waktu_mulai) - new Date(b.waktu_mulai));
-
-            if (roomSchedules.length === 0) {
-                emptyEl.classList.remove('hidden');
-            } else {
-                emptyEl.classList.add('hidden');
-                roomSchedules.forEach(schedule => {
-                    const start = new Date(schedule.waktu_mulai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-                    const end = new Date(schedule.waktu_selesai).toLocaleString('id-ID', { timeStyle: 'short' });
-
-                    const listItem = `
-                        <li class="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                            <p class="font-medium text-gray-800">${start} - ${end}</p>
-                        </li>
-                    `;
-                    listEl.innerHTML += listItem;
-                });
-            }
-            toggleModal();
-        }
-
-        // --- LOAD DATA & SUBMIT ---
         async function loadBookings() {
-            try {
-                const res = await fetch(`${API_URL}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                const tbody = document.getElementById('bookingTableBody');
-                tbody.innerHTML = '';
-                
-                if(data.length === 0) {
-                     tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-gray-400 text-sm italic">Belum ada riwayat peminjaman</td></tr>';
-                     return;
-                }
-
-                data.forEach(b => {
-                    let statusColor = 'text-yellow-600 bg-yellow-100';
-                    if(b.status==='disetujui') statusColor='text-green-600 bg-green-100';
-                    if(b.status==='ditolak') statusColor='text-red-600 bg-red-100';
-                    
-                    const dateStr = new Date(b.waktu_mulai).toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-                    
-                    const alatList = b.peminjaman_detail_alat && b.peminjaman_detail_alat.length > 0 
-                        ? b.peminjaman_detail_alat.map(d => `${d.jumlah_pinjam}x ${d.peralatan.nama_alat}`).join(', ')
-                        : 'N/A';
-
-                    const row = `<tr class="hover:bg-gray-50 transition">
-                        <td class="py-3 px-4 font-medium text-gray-800">${b.ruangan?.nama_ruang || 'ID:'+b.ruang_id}</td>
-                        <td class="py-3 px-4 text-xs text-gray-600">${alatList}</td>
-                        <td class="py-3 px-4 text-gray-600">${dateStr}</td>
-                        <td class="py-3 px-4 text-center"><span class="${statusColor} px-3 py-1 rounded text-xs font-bold border border-opacity-20 shadow-sm">${b.status.toUpperCase()}</span></td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
-            } catch(e) { console.error(e); }
+            const res = await fetch(`${API_URL}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            const tbody = document.getElementById('bookingTableBody'); tbody.innerHTML = '';
+            data.forEach(b => {
+                let color = b.status === 'pending' ? 'text-yellow-600 bg-yellow-100' : (b.status==='disetujui' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100');
+                const row = `<tr class="border-b hover:bg-gray-50"><td class="py-3 px-4">${b.ruangan?.nama_ruang || '-'}</td><td class="py-3 px-4">${new Date(b.waktu_mulai).toLocaleDateString('id-ID')}</td><td class="py-3 px-4 text-center"><span class="${color} px-2 py-1 rounded text-xs font-bold uppercase">${b.status}</span></td></tr>`;
+                tbody.innerHTML += row;
+            });
         }
 
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const alatArray = Object.values(selectedEquipment);
-
             const payload = {
                 ruang_id: document.getElementById('ruangId').value,
                 waktu_mulai: new Date(document.getElementById('waktuMulai').value).toISOString(),
                 waktu_selesai: new Date(document.getElementById('waktuSelesai').value).toISOString(),
                 tujuan_peminjaman: document.getElementById('tujuan').value,
-                alat_ids: alatArray 
+                alat_ids: Object.values(selectedEquipment)
             };
-
-            try {
-                const res = await fetch(`${API_URL}/booking`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
-                const result = await res.json();
-                if(res.ok) { 
-                    alert('✅ Pengajuan Berhasil dikirim! Menunggu persetujuan Admin.'); 
-                    e.target.reset(); 
-                    selectedEquipment = {}; 
-                    renderSelectedEquipment();
-                    loadBookings(); 
-                    loadRoomStatus(); 
-                }
-                else { alert('❌ Gagal: ' + result.error); }
-            } catch(e) { alert('Terjadi kesalahan koneksi ke server.'); }
+            const res = await fetch(`${API_URL}/booking`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+            if(res.ok) { alert('Sukses!'); e.target.reset(); selectedEquipment={}; renderSelectedEquipment(); loadBookings(); }
+            else { alert('Gagal'); }
         });
 
-        function logout() { localStorage.clear(); window.location.href='/'; }
+        // --- STATUS RUANGAN ---
+        async function loadRoomStatus() {
+            const container = document.getElementById('roomStatusContainer'); container.innerHTML = 'Loading...';
+            try {
+                const [resR, resS] = await Promise.all([fetch(`${API_URL}/rooms`, {headers:{'Authorization':`Bearer ${token}`}}), fetch(`${API_URL}/booking/schedule`, {headers:{'Authorization':`Bearer ${token}`}})]);
+                globalRooms = await resR.json(); globalSchedules = await resS.json();
+                container.innerHTML = ''; const select = document.getElementById('ruangId'); select.innerHTML = '<option disabled selected>-- Pilih Ruangan --</option>';
+                
+                globalRooms.forEach(r => {
+                    if(r.status === 'maintenance') {
+                        container.innerHTML += `<div class="bg-orange-50 p-4 border-l-4 border-orange-400 rounded shadow opacity-75"><h3 class="font-bold text-gray-700">${r.nama_ruang}</h3><span class="text-xs bg-orange-500 text-white px-2 rounded">PERBAIKAN</span></div>`;
+                        return; 
+                    }
+                    select.innerHTML += `<option value="${r.id}">${r.nama_ruang}</option>`;
+                    
+                    const now = new Date();
+                    const busy = globalSchedules.some(s => s.ruang_id === r.id && new Date(s.waktu_mulai) <= now && new Date(s.waktu_selesai) >= now);
+                    const color = busy ? 'border-red-500 bg-red-50' : 'border-green-500 bg-white';
+                    const status = busy ? 'DIPAKAI' : 'TERSEDIA';
+                    container.innerHTML += `<div onclick="openModal('${r.id}', '${r.nama_ruang}')" class="p-4 border-l-4 ${color} rounded shadow cursor-pointer hover:shadow-lg"><h3 class="font-bold">${r.nama_ruang}</h3><span class="text-xs font-bold">${status}</span></div>`;
+                });
+            } catch(e) { container.innerHTML = 'Error loading data.'; }
+        }
 
-        // --- INISIALISASI ---
-        loadRoomStatus();
+        // --- MODAL ---
+        function toggleModal() { document.querySelector('.modal').classList.toggle('opacity-0'); document.querySelector('.modal').classList.toggle('pointer-events-none'); }
+        function openModal(id, name) {
+            document.getElementById('modalRoomName').innerText = name;
+            const list = document.getElementById('modalScheduleList'); list.innerHTML = '';
+            const scheds = globalSchedules.filter(s => s.ruang_id === id).sort((a,b) => new Date(a.waktu_mulai) - new Date(b.waktu_mulai));
+            if(scheds.length===0) document.getElementById('modalEmptyState').classList.remove('hidden');
+            else {
+                document.getElementById('modalEmptyState').classList.add('hidden');
+                scheds.forEach(s => list.innerHTML += `<li class="p-2 bg-gray-100 rounded border">${new Date(s.waktu_mulai).toLocaleString()} - ${new Date(s.waktu_selesai).toLocaleTimeString()}</li>`);
+            }
+            toggleModal();
+        }
+
+        function logout() { localStorage.clear(); window.location.href = '/'; }
+
+        // Init
+        loadEquipmentOptions();
+        loadMyReports();
         loadBookings();
-        loadEquipmentOptions(); 
+        loadRoomStatus();
     </script>
 </body>
 </html>
