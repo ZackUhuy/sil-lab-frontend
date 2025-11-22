@@ -286,17 +286,14 @@
             renderSelectedEquipment();
         }
         
-        // --- LOGIKA STATUS RUANGAN (DIPERBAIKI) ---
+        // --- LOGIKA STATUS RUANGAN (FIX MAINTENANCE) ---
         async function loadRoomStatus() {
             const container = document.getElementById('roomStatusContainer');
             container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Memuat data ruangan dan jadwal...</div>';
             
             try {
-                // --- PERBAIKAN PENTING: Mengganti URL API ---
                 const [roomsRes, schedulesRes] = await Promise.all([
-                    // Menggunakan endpoint yang benar: /rooms
                     fetch(`${API_URL}/rooms`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                    // Menggunakan endpoint yang benar: /booking/schedule
                     fetch(`${API_URL}/booking/schedule`, { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
 
@@ -308,14 +305,40 @@
 
                 // Bersihkan loading message
                 container.innerHTML = ''; 
+                const selectEl = document.getElementById('ruangId');
+                selectEl.innerHTML = '<option value="" disabled selected>-- Pilih Ruangan --</option>';
 
                 if (globalRooms.length === 0) {
                     container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-400 italic">Belum ada ruangan yang terdaftar.</div>';
                     return;
                 }
 
-                // Render Kartu Status Ruangan
+                // Render Kartu
                 globalRooms.forEach(room => {
+                    
+                    // --- LOGIKA MAINTENANCE BARU ---
+                    if (room.status === 'maintenance') {
+                        // Jika maintenance: Tampilkan kartu oranye & JANGAN masukkan ke dropdown
+                        const card = `
+                            <div class="bg-orange-50 p-5 rounded-xl shadow-sm border-l-4 border-orange-400 opacity-80 cursor-not-allowed">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-lg font-bold text-gray-700">${room.nama_ruang}</h3>
+                                    <div class="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-500 text-white shadow-sm">
+                                        🛠️ PERBAIKAN
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Ruangan tidak dapat digunakan.</p>
+                            </div>
+                        `;
+                        container.innerHTML += card;
+                        return; // Skip sisa logika (tidak masuk dropdown)
+                    }
+                    // -------------------------------
+
+                    // Jika Tersedia, masukkan ke dropdown
+                    selectEl.innerHTML += `<option value="${room.id}">${room.nama_ruang} (${room.kapasitas} orang)</option>`;
+
+                    // Cek Jadwal (Merah/Hijau)
                     const now = new Date();
                     const isBusy = globalSchedules.some(schedule => {
                         return schedule.ruang_id === room.id && 
@@ -323,13 +346,14 @@
                                 new Date(schedule.waktu_selesai) >= now;
                     });
 
-                    const statusClass = isBusy ? 'bg-red-500/10 border-red-500 text-red-700' : 'bg-green-500/10 border-green-500 text-green-700';
+                    const statusClass = isBusy ? 'bg-red-50 border-red-500 text-red-700' : 'bg-green-50 border-green-500 text-green-700';
                     const statusText = isBusy ? 'SEDANG DIPAKAI' : 'TERSEDIA';
-
+                    
+                    // Tambahkan border-l-4 agar konsisten dengan desain
                     const card = `
-                        <div onclick="openScheduleModal('${room.id}', '${room.nama_ruang}')" class="bg-white p-5 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition transform hover:scale-[1.02] border-l-4 ${statusClass}">
+                        <div onclick="openScheduleModal('${room.id}', '${room.nama_ruang}')" class="bg-white p-5 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition transform hover:scale-[1.02] border-l-4 ${statusClass.replace('bg-', 'border-')}">
                             <div class="flex justify-between items-start">
-                                <h3 class="text-lg font-bold">${room.nama_ruang}</h3>
+                                <h3 class="text-lg font-bold text-gray-800">${room.nama_ruang}</h3>
                                 <div class="text-xs font-semibold px-2 py-0.5 rounded-full ${isBusy ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}">
                                     ${statusText}
                                 </div>
@@ -339,14 +363,6 @@
                     `;
                     container.innerHTML += card;
                 });
-                
-                // Update dropdown pilihan ruangan di form peminjaman
-                const selectEl = document.getElementById('ruangId');
-                selectEl.innerHTML = '<option value="" disabled selected>-- Pilih Ruangan --</option>';
-                globalRooms.forEach(room => {
-                    selectEl.innerHTML += `<option value="${room.id}">${room.nama_ruang} (${room.kapasitas} orang)</option>`;
-                });
-
 
             } catch (error) {
                 console.error('Error loading room status:', error);
