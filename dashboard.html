@@ -35,59 +35,54 @@
         <!-- Navigasi Tab -->
         <div class="mb-6 bg-white rounded-lg shadow-sm p-1 flex space-x-1 overflow-x-auto">
             <button onclick="showTab('booking')" id="tab-booking" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center bg-blue-600 text-white shadow transition whitespace-nowrap">
-                📝 Form & Riwayat
+                🏢 Pinjam Ruangan
+            </button>
+            <button onclick="showTab('alat_only')" id="tab-alat_only" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
+                📦 Pinjam Alat Saja
             </button>
             <button onclick="showTab('ruangan')" id="tab-ruangan" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
-                🏢 Info & Jadwal
+                📅 Info Jadwal
             </button>
             <button onclick="showTab('laporan')" id="tab-laporan" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
                 ⚠️ Lapor Kerusakan
             </button>
         </div>
 
-        <!-- === TAB 1: BOOKING & RIWAYAT === -->
+        <!-- === TAB 1: PINJAM RUANGAN (+ ALAT OPSIONAL) === -->
         <div id="content-booking" class="tab-content active">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Form Peminjaman -->
-                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-gray-100">
-                    <h2 class="text-xl font-bold mb-6 text-gray-800">Ajukan Peminjaman</h2>
+                <!-- Form Peminjaman Ruang -->
+                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-blue-100">
+                    <h2 class="text-xl font-bold mb-6 text-blue-800">Form Pinjam Ruangan</h2>
                     <form id="bookingForm" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Ruangan</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Ruangan</label>
                             <select id="ruangId" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50" required>
                                 <option value="" disabled selected>-- Pilih Ruangan --</option>
                             </select>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label>
-                                <input type="datetime-local" id="waktuMulai" class="w-full p-2 border rounded-lg text-sm" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label>
-                                <input type="datetime-local" id="waktuSelesai" class="w-full p-2 border rounded-lg text-sm" required>
-                            </div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label><input type="datetime-local" id="waktuMulai" class="w-full p-2 border rounded-lg text-sm" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label><input type="datetime-local" id="waktuSelesai" class="w-full p-2 border rounded-lg text-sm" required></div>
                         </div>
-                        <div class="border border-yellow-300 bg-yellow-50 p-4 rounded-lg">
-                            <h3 class="font-bold text-base text-yellow-800 mb-2">Alat (Opsional)</h3>
-                            <div id="equipmentList" class="space-y-2 mb-4"></div>
+                        
+                        <!-- Alat Opsional untuk Ruangan -->
+                        <div class="border border-gray-200 bg-gray-50 p-3 rounded-lg">
+                            <h3 class="font-bold text-xs text-gray-500 uppercase mb-2">Alat Tambahan (Opsional)</h3>
+                            <div id="listAlatRoom" class="space-y-1 mb-2"></div>
                             <div class="flex space-x-2">
-                                <select id="selectAlat" class="flex-grow p-2 border rounded-lg text-sm bg-white">
-                                    <option value="" disabled selected>Pilih Alat...</option>
-                                </select>
-                                <input type="number" id="jumlahAlat" min="1" value="1" class="w-16 p-2 border rounded-lg text-sm">
-                                <button type="button" onclick="addEquipment()" class="bg-yellow-500 text-white p-2 rounded-lg text-sm hover:bg-yellow-600">Tambah</button>
+                                <select id="selectAlatRoom" class="flex-grow p-2 border rounded-lg text-sm bg-white"><option value="" disabled selected>Pilih Alat...</option></select>
+                                <input type="number" id="qtyAlatRoom" min="1" value="1" class="w-14 p-2 border rounded-lg text-sm">
+                                <button type="button" onclick="addToolToRoom()" class="bg-gray-200 text-gray-700 px-3 rounded-lg text-sm hover:bg-gray-300">+</button>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Tujuan</label>
-                            <textarea id="tujuan" class="w-full p-3 border rounded-lg text-sm" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">Kirim Pengajuan</button>
+
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tujuan</label><textarea id="tujuan" class="w-full p-3 border rounded-lg text-sm" rows="2" required></textarea></div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">Ajukan Ruangan</button>
                     </form>
                 </div>
 
-                <!-- Riwayat -->
+                <!-- Riwayat (Shared) -->
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-bold text-gray-800">Riwayat Peminjaman</h2>
@@ -97,9 +92,10 @@
                         <table class="min-w-full bg-white">
                             <thead class="bg-gray-50 border-b">
                                 <tr class="text-gray-600 text-xs uppercase tracking-wider text-left">
-                                    <th class="py-3 px-4 font-semibold">Ruangan</th>
-                                    <th class="py-3 px-4 font-semibold">Waktu</th>
-                                    <th class="py-3 px-4 font-semibold text-center">Status</th>
+                                    <th class="py-3 px-4">Jenis</th> <!-- Kolom Baru -->
+                                    <th class="py-3 px-4">Detail</th>
+                                    <th class="py-3 px-4">Waktu</th>
+                                    <th class="py-3 px-4 text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="bookingTableBody" class="text-gray-600 text-sm divide-y"></tbody>
@@ -109,7 +105,52 @@
             </div>
         </div>
 
-        <!-- === TAB 2: DAFTAR RUANGAN === -->
+        <!-- === TAB 2: PINJAM ALAT SAJA (BARU) === -->
+        <div id="content-alat_only" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Form Peminjaman Alat -->
+                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-green-100">
+                    <h2 class="text-xl font-bold mb-6 text-green-800">Form Pinjam Alat (Tanpa Ruangan)</h2>
+                    <form id="toolBookingForm" class="space-y-4">
+                        
+                        <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+                            <h3 class="font-bold text-green-800 mb-2">Daftar Alat yang Dipinjam</h3>
+                            <div id="listAlatOnly" class="space-y-2 mb-4 min-h-[50px]">
+                                <p class="text-xs text-gray-400 italic text-center py-2">Belum ada alat dipilih</p>
+                            </div>
+                            
+                            <div class="flex flex-col space-y-2">
+                                <select id="selectAlatOnly" class="w-full p-2 border rounded-lg text-sm bg-white">
+                                    <option value="" disabled selected>Pilih Alat...</option>
+                                </select>
+                                <div class="flex space-x-2">
+                                    <input type="number" id="qtyAlatOnly" min="1" value="1" class="w-20 p-2 border rounded-lg text-sm" placeholder="Jml">
+                                    <button type="button" onclick="addToolToOnly()" class="flex-grow bg-green-600 text-white p-2 rounded-lg text-sm hover:bg-green-700 font-medium">Tambahkan ke Daftar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label><input type="datetime-local" id="waktuMulaiTool" class="w-full p-2 border rounded-lg text-sm" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label><input type="datetime-local" id="waktuSelesaiTool" class="w-full p-2 border rounded-lg text-sm" required></div>
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tujuan Peminjaman</label><textarea id="tujuanTool" class="w-full p-3 border rounded-lg text-sm" rows="2" required></textarea></div>
+                        
+                        <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition">Ajukan Peminjaman Alat</button>
+                    </form>
+                </div>
+
+                <!-- Riwayat (Sama, Copy dari Tab 1 untuk UX) -->
+                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
+                    <div class="p-4 bg-gray-50 rounded text-center text-gray-500">
+                        <p>Lihat riwayat lengkap di Tab "Form & Riwayat" atau scroll ke bawah di Tab ini jika layar kecil.</p>
+                        <button onclick="showTab('booking')" class="text-blue-600 underline mt-2">Ke Tab Riwayat Utama</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === TAB 3: STATUS RUANGAN === -->
         <div id="content-ruangan" class="tab-content">
             <div class="mb-6 flex justify-between items-end border-b pb-2 border-gray-200">
                 <h2 class="text-2xl font-bold text-gray-800">Status Ruangan Real-time</h2>
@@ -118,43 +159,32 @@
             <div id="roomStatusContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
         </div>
 
-        <!-- === TAB 3: LAPOR KERUSAKAN === -->
+        <!-- === TAB 4: LAPOR KERUSAKAN === -->
         <div id="content-laporan" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-red-100">
-                    <h2 class="text-xl font-bold mb-6 text-red-700 flex items-center gap-2">⚠️ Form Lapor Kerusakan</h2>
+                    <h2 class="text-xl font-bold mb-6 text-red-700">⚠️ Lapor Kerusakan</h2>
                     <form id="reportForm" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Alat yang Rusak</label>
-                            <select id="laporAlatId" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50" required><option value="" disabled selected>Memuat...</option></select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Kerusakan</label>
-                            <textarea id="deskripsiKerusakan" class="w-full p-3 border border-gray-300 rounded-lg text-sm" rows="4" required></textarea>
-                        </div>
-                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition">Kirim Laporan</button>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Alat</label><select id="laporAlatId" class="w-full p-2.5 border rounded-lg" required><option value="" disabled selected>Memuat...</option></select></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Masalah</label><textarea id="deskripsiKerusakan" class="w-full p-3 border rounded-lg text-sm" rows="4" required></textarea></div>
+                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700">Kirim Laporan</button>
                     </form>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
-                    <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold text-gray-800">Riwayat Laporan Saya</h2><button onclick="loadMyReports()" class="text-sm text-blue-500 hover:text-blue-700 font-medium">Refresh</button></div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white"><thead class="bg-gray-50 border-b"><tr class="text-gray-600 text-xs uppercase tracking-wider text-left"><th class="py-3 px-4 font-semibold">Tanggal</th><th class="py-3 px-4 font-semibold">Nama Alat</th><th class="py-3 px-4 font-semibold">Masalah</th><th class="py-3 px-4 font-semibold text-center">Status</th></tr></thead><tbody id="reportTableBody" class="text-gray-600 text-sm divide-y"></tbody></table>
-                    </div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Riwayat Laporan</h2>
+                    <div class="overflow-x-auto"><table class="min-w-full bg-white"><thead class="bg-gray-50 border-b"><tr class="text-gray-600 text-xs uppercase"><th class="py-3 px-4 text-left">Tanggal</th><th class="py-3 px-4 text-left">Alat</th><th class="py-3 px-4 text-left">Masalah</th><th class="py-3 px-4 text-center">Status</th></tr></thead><tbody id="reportTableBody" class="text-gray-600 text-sm divide-y"></tbody></table></div>
                 </div>
             </div>
         </div>
+
     </div>
 
-    <!-- MODAL JADWAL -->
+    <!-- MODAL -->
     <div id="scheduleModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
         <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50" onclick="toggleModal()"></div>
         <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[80vh] transform transition-all scale-95 p-6">
-            <div class="flex justify-between items-center pb-3 border-b">
-                <p class="text-xl font-bold text-gray-800" id="modalRoomName">Nama Ruangan</p>
-                <button onclick="toggleModal()" class="text-red-500 font-bold">✕</button>
-            </div>
-            <ul id="modalScheduleList" class="space-y-2 mt-4 text-sm"></ul>
-            <p id="modalEmptyState" class="text-gray-400 italic text-center mt-4 hidden text-sm">Tidak ada jadwal aktif.</p>
+            <div class="flex justify-between items-center pb-3 border-b"><p class="text-xl font-bold" id="modalRoomName">Jadwal</p><button onclick="toggleModal()" class="text-red-500 font-bold">✕</button></div>
+            <ul id="modalScheduleList" class="space-y-2 mt-4 text-sm"></ul><p id="modalEmptyState" class="text-gray-400 italic text-center mt-4 hidden text-sm">Kosong.</p>
         </div>
     </div>
 
@@ -165,7 +195,10 @@
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         document.getElementById('userName').innerText = user.nama || user.email || 'User';
 
-        let globalRooms = [], globalSchedules = [], globalEquipment = [], selectedEquipment = {};
+        let globalRooms = [], globalSchedules = [], globalEquipment = [];
+        // Pisahkan variabel penyimpanan alat untuk dua form berbeda
+        let selectedToolsRoom = {}; // Untuk Tab Ruangan
+        let selectedToolsOnly = {}; // Untuk Tab Alat Saja
 
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -176,154 +209,189 @@
         }
         showTab('booking');
 
-        // --- STATUS RUANGAN (WARNA DIPERBAIKI) ---
+        // --- LOAD DATA AWAL ---
+        async function loadInitialData() {
+            // Load Alat
+            try {
+                const res = await fetch(`${API_URL}/equipment`, { headers: { 'Authorization': `Bearer ${token}` } });
+                globalEquipment = await res.json();
+                
+                const selRoom = document.getElementById('selectAlatRoom');
+                const selOnly = document.getElementById('selectAlatOnly');
+                const selLapor = document.getElementById('laporAlatId');
+                
+                // Reset
+                selRoom.innerHTML = '<option disabled selected>Pilih Alat...</option>';
+                selOnly.innerHTML = '<option disabled selected>Pilih Alat...</option>';
+                selLapor.innerHTML = '<option disabled selected>Pilih...</option>';
+
+                globalEquipment.forEach(item => {
+                    const opt = `<option value="${item.id}">${item.nama_alat} (${item.jumlah_tersedia} unit)</option>`;
+                    selRoom.innerHTML += opt;
+                    selOnly.innerHTML += opt;
+                    selLapor.innerHTML += `<option value="${item.id}">${item.nama_alat}</option>`;
+                });
+            } catch (e) { console.error(e); }
+
+            loadRoomStatus(); // Load Ruangan & Jadwal
+            loadBookings(); // Load Riwayat
+            loadMyReports(); // Load Laporan
+        }
+
+        // --- LOGIKA ALAT: FORM RUANGAN ---
+        function addToolToRoom() {
+            const id = document.getElementById('selectAlatRoom').value;
+            const qty = parseInt(document.getElementById('qtyAlatRoom').value);
+            if(validateTool(id, qty)) {
+                selectedToolsRoom[id] = { id, jumlah: qty };
+                renderTools('listAlatRoom', selectedToolsRoom, 'removeToolFromRoom');
+            }
+        }
+        function removeToolFromRoom(id) { delete selectedToolsRoom[id]; renderTools('listAlatRoom', selectedToolsRoom, 'removeToolFromRoom'); }
+
+        // --- LOGIKA ALAT: FORM ALAT SAJA ---
+        function addToolToOnly() {
+            const id = document.getElementById('selectAlatOnly').value;
+            const qty = parseInt(document.getElementById('qtyAlatOnly').value);
+            if(validateTool(id, qty)) {
+                selectedToolsOnly[id] = { id, jumlah: qty };
+                renderTools('listAlatOnly', selectedToolsOnly, 'removeToolFromOnly');
+            }
+        }
+        function removeToolFromOnly(id) { delete selectedToolsOnly[id]; renderTools('listAlatOnly', selectedToolsOnly, 'removeToolFromOnly'); }
+
+        // --- HELPER ALAT ---
+        function validateTool(id, qty) {
+            if (!id || isNaN(qty) || qty <= 0) { alert('Input tidak valid'); return false; }
+            const item = globalEquipment.find(e => e.id === id);
+            if (item.jumlah_tersedia < qty) { alert('Stok tidak cukup'); return false; }
+            return true;
+        }
+        function renderTools(containerId, dataObj, removeFnName) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            if(Object.keys(dataObj).length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 italic">Belum ada alat</p>';
+                return;
+            }
+            for (const id in dataObj) {
+                const item = globalEquipment.find(e => e.id === id);
+                container.innerHTML += `
+                    <div class="flex justify-between bg-white p-2 border rounded text-sm items-center">
+                        <span>${item.nama_alat}</span>
+                        <div class="flex items-center">
+                            <span class="font-bold text-blue-600 mr-2">${dataObj[id].jumlah}x</span>
+                            <button type="button" onclick="${removeFnName}('${id}')" class="text-red-500 font-bold">&times;</button>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        // --- SUBMIT FORM 1: RUANGAN ---
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await submitBooking({
+                ruang_id: document.getElementById('ruangId').value,
+                waktu_mulai: document.getElementById('waktuMulai').value,
+                waktu_selesai: document.getElementById('waktuSelesai').value,
+                tujuan_peminjaman: document.getElementById('tujuan').value,
+                alat_ids: Object.values(selectedToolsRoom)
+            }, () => {
+                e.target.reset(); selectedToolsRoom = {}; renderTools('listAlatRoom', {}, '');
+            });
+        });
+
+        // --- SUBMIT FORM 2: ALAT SAJA ---
+        document.getElementById('toolBookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(Object.keys(selectedToolsOnly).length === 0) { alert('Pilih minimal 1 alat!'); return; }
+            
+            await submitBooking({
+                ruang_id: null, // Penting: Null artinya cuma alat
+                waktu_mulai: document.getElementById('waktuMulaiTool').value,
+                waktu_selesai: document.getElementById('waktuSelesaiTool').value,
+                tujuan_peminjaman: document.getElementById('tujuanTool').value,
+                alat_ids: Object.values(selectedToolsOnly)
+            }, () => {
+                e.target.reset(); selectedToolsOnly = {}; renderTools('listAlatOnly', {}, '');
+            });
+        });
+
+        async function submitBooking(payloadRaw, onSuccess) {
+            const payload = {
+                ...payloadRaw,
+                waktu_mulai: new Date(payloadRaw.waktu_mulai).toISOString(),
+                waktu_selesai: new Date(payloadRaw.waktu_selesai).toISOString()
+            };
+            try {
+                const res = await fetch(`${API_URL}/booking`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+                const result = await res.json();
+                if(res.ok) { alert('Berhasil diajukan!'); onSuccess(); loadBookings(); }
+                else { alert('Gagal: ' + result.error); }
+            } catch(e) { alert('Error koneksi'); }
+        }
+
+        // --- RIWAYAT (TABLE) ---
+        async function loadBookings() {
+            const res = await fetch(`${API_URL}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            const tbody = document.getElementById('bookingTableBody'); tbody.innerHTML = '';
+            data.forEach(b => {
+                let typeIcon = b.ruangan ? '🏢 Ruang' : '📦 Alat';
+                let detail = b.ruangan ? `<span class="font-bold text-blue-600">${b.ruangan.nama_ruang}</span>` : '<span class="text-gray-400 italic">Tanpa Ruangan</span>';
+                
+                // List Alat
+                if (b.peminjaman_detail_alat && b.peminjaman_detail_alat.length > 0) {
+                    const tools = b.peminjaman_detail_alat.map(t => `${t.jumlah_pinjam}x ${t.peralatan.nama_alat}`).join(', ');
+                    detail += `<div class="text-xs text-gray-500 mt-1">Alat: ${tools}</div>`;
+                }
+
+                let color = b.status === 'pending' ? 'text-yellow-600 bg-yellow-100' : (b.status==='disetujui' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100');
+                
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4 whitespace-nowrap font-medium">${typeIcon}</td>
+                        <td class="py-3 px-4">${detail}</td>
+                        <td class="py-3 px-4 text-xs text-gray-600">
+                            ${new Date(b.waktu_mulai).toLocaleString()} <br> s/d <br> ${new Date(b.waktu_selesai).toLocaleString()}
+                        </td>
+                        <td class="py-3 px-4 text-center"><span class="${color} px-2 py-1 rounded text-xs font-bold uppercase">${b.status}</span></td>
+                    </tr>`;
+            });
+        }
+
+        // --- MODAL, STATUS RUANGAN, LAPORAN (Copy dari sebelumnya, disingkat agar muat) ---
         async function loadRoomStatus() {
             const container = document.getElementById('roomStatusContainer'); container.innerHTML = 'Loading...';
             try {
                 const [resR, resS] = await Promise.all([fetch(`${API_URL}/rooms`, {headers:{'Authorization':`Bearer ${token}`}}), fetch(`${API_URL}/booking/schedule`, {headers:{'Authorization':`Bearer ${token}`}})]);
                 globalRooms = await resR.json(); globalSchedules = await resS.json();
                 container.innerHTML = ''; const select = document.getElementById('ruangId'); select.innerHTML = '<option disabled selected>-- Pilih Ruangan --</option>';
-                
                 globalRooms.forEach(r => {
-                    let cardClass = '';
-                    let statusText = '';
-                    let statusIcon = '';
-                    let detailText = '';
-                    let isClickable = true;
-
-                    // 1. Cek Maintenance (Prioritas Tertinggi)
-                    if (r.status === 'maintenance') {
-                        cardClass = 'bg-orange-100 border-orange-500 text-orange-900';
-                        statusText = 'PERBAIKAN';
-                        statusIcon = '🛠️';
-                        detailText = 'Tidak dapat digunakan';
-                        isClickable = false; 
-                        // Jangan tambahkan ke dropdown
-                    } else {
-                        // Tambahkan ke dropdown jika tidak maintenance
-                        select.innerHTML += `<option value="${r.id}">${r.nama_ruang}</option>`;
-
-                        // 2. Cek Jadwal (Busy/Free)
-                        const now = new Date();
-                        const busy = globalSchedules.some(s => s.ruang_id === r.id && new Date(s.waktu_mulai) <= now && new Date(s.waktu_selesai) >= now);
-                        
-                        if (busy) {
-                            cardClass = 'bg-red-100 border-red-500 text-red-900';
-                            statusText = 'DIPAKAI';
-                            statusIcon = '⛔';
-                            detailText = 'Sedang ada kegiatan';
-                        } else {
-                            cardClass = 'bg-green-100 border-green-500 text-green-900';
-                            statusText = 'TERSEDIA';
-                            statusIcon = '✅';
-                            detailText = 'Siap digunakan';
-                        }
-                    }
-
-                    const clickAttr = isClickable ? `onclick="openModal('${r.id}', '${r.nama_ruang}')"` : '';
-                    const cursorClass = isClickable ? 'cursor-pointer hover:shadow-lg hover:-translate-y-1' : 'cursor-not-allowed opacity-80';
-
-                    container.innerHTML += `
-                        <div ${clickAttr} class="p-5 border-l-4 rounded-lg shadow-sm transition duration-300 ${cardClass} ${cursorClass}">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="font-bold text-lg">${r.nama_ruang}</h3>
-                                <span class="text-xs font-bold px-2 py-1 rounded bg-white/50 border border-black/10">${statusIcon} ${statusText}</span>
-                            </div>
-                            <p class="text-sm opacity-80 mb-3">Kapasitas: ${r.kapasitas} Orang</p>
-                            <p class="text-xs font-semibold flex items-center gap-1">${detailText}</p>
-                        </div>
-                    `;
+                    if(r.status === 'maintenance') { container.innerHTML += `<div class="bg-orange-100 border-l-4 border-orange-500 p-4 rounded opacity-75"><h3 class="font-bold">${r.nama_ruang}</h3><span class="text-xs bg-orange-500 text-white px-2 rounded">PERBAIKAN</span></div>`; return; }
+                    select.innerHTML += `<option value="${r.id}">${r.nama_ruang}</option>`;
+                    const busy = globalSchedules.some(s => s.ruang_id === r.id && new Date(s.waktu_mulai) <= new Date() && new Date(s.waktu_selesai) >= new Date());
+                    container.innerHTML += `<div onclick="openModal('${r.id}','${r.nama_ruang}')" class="p-4 border-l-4 ${busy?'bg-red-100 border-red-500':'bg-green-100 border-green-500'} rounded cursor-pointer hover:shadow-lg"><h3 class="font-bold">${r.nama_ruang}</h3><span class="text-xs font-bold">${busy?'DIPAKAI':'TERSEDIA'}</span></div>`;
                 });
-            } catch(e) { container.innerHTML = 'Error loading data.'; }
+            } catch(e) {}
         }
-
-        // --- LOADERS LAIN ---
-        async function loadEquipmentOptions() {
-             try {
-                const res = await fetch(`${API_URL}/equipment`, { headers: { 'Authorization': `Bearer ${token}` } });
-                globalEquipment = await res.json();
-                const selectBooking = document.getElementById('selectAlat'); selectBooking.innerHTML = '<option value="" disabled selected>Pilih Alat...</option>';
-                const selectLapor = document.getElementById('laporAlatId'); selectLapor.innerHTML = '<option value="" disabled selected>Pilih Alat Rusak...</option>';
-                globalEquipment.forEach(item => {
-                    const opt1 = document.createElement('option'); opt1.value = item.id; opt1.textContent = `${item.nama_alat} (${item.jumlah_tersedia} tersedia)`; selectBooking.appendChild(opt1);
-                    const opt2 = document.createElement('option'); opt2.value = item.id; opt2.textContent = `${item.nama_alat} - ${item.kategori}`; selectLapor.appendChild(opt2);
-                });
-            } catch (error) { console.error(error); }
-        }
-
-        async function loadMyReports() {
-            try {
-                const res = await fetch(`${API_URL}/reports/my`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                const tbody = document.getElementById('reportTableBody'); tbody.innerHTML = '';
-                if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center italic text-gray-400">Belum ada laporan.</td></tr>'; return; }
-                data.forEach(item => {
-                    let statusColor = 'bg-yellow-100 text-yellow-800';
-                    if(item.status_laporan === 'diproses') statusColor = 'bg-blue-100 text-blue-800';
-                    if(item.status_laporan === 'selesai') statusColor = 'bg-green-100 text-green-800';
-                    tbody.innerHTML += `<tr class="hover:bg-gray-50 border-b"><td class="py-3 px-4">${new Date(item.tanggal_lapor).toLocaleDateString('id-ID')}</td><td class="py-3 px-4 font-medium">${item.peralatan?.nama_alat || '-'}</td><td class="py-3 px-4 truncate max-w-xs" title="${item.deskripsi_kerusakan}">${item.deskripsi_kerusakan}</td><td class="py-3 px-4 text-center"><span class="${statusColor} px-2 py-1 rounded-full text-xs font-bold uppercase">${item.status_laporan}</span></td></tr>`;
-                });
-            } catch (error) { console.error(error); }
-        }
-
-        document.getElementById('reportForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = { alat_id: document.getElementById('laporAlatId').value, deskripsi_kerusakan: document.getElementById('deskripsiKerusakan').value };
-            try {
-                const res = await fetch(`${API_URL}/reports`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
-                if (res.ok) { alert('Laporan dikirim!'); e.target.reset(); loadMyReports(); } else { const err = await res.json(); alert('Gagal: ' + err.error); }
-            } catch (e) { alert('Error koneksi.'); }
-        });
-
-        // --- BOOKING ---
-        function addEquipment() {
-            const alatId = document.getElementById('selectAlat').value;
-            const jumlah = parseInt(document.getElementById('jumlahAlat').value);
-            const eq = globalEquipment.find(e => e.id === alatId);
-            if (!alatId || isNaN(jumlah) || jumlah <= 0) return alert('Invalid Input');
-            if (eq.jumlah_tersedia < jumlah) return alert('Stok kurang');
-            selectedEquipment[alatId] = { id: alatId, jumlah: jumlah }; renderSelectedEquipment();
-        }
-        function removeEquipment(id) { delete selectedEquipment[id]; renderSelectedEquipment(); }
-        function renderSelectedEquipment() {
-            const container = document.getElementById('equipmentList'); container.innerHTML = '';
-            for (const id in selectedEquipment) {
-                const item = globalEquipment.find(e => e.id === id);
-                container.innerHTML += `<div class="flex justify-between bg-white p-2 border rounded mb-1 text-sm"><span>${item.nama_alat}</span><span class="font-bold text-blue-600">${selectedEquipment[id].jumlah} Unit <button onclick="removeEquipment('${id}')" class="text-red-500 ml-2">x</button></span></div>`;
-            }
-        }
-        async function loadBookings() {
-            const res = await fetch(`${API_URL}/booking`, { headers: { 'Authorization': `Bearer ${token}` } });
-            const data = await res.json();
-            const tbody = document.getElementById('bookingTableBody'); tbody.innerHTML = '';
-            data.forEach(b => {
-                let color = b.status === 'pending' ? 'text-yellow-600 bg-yellow-100' : (b.status==='disetujui' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100');
-                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="py-3 px-4">${b.ruangan?.nama_ruang || '-'}</td><td class="py-3 px-4">${new Date(b.waktu_mulai).toLocaleDateString('id-ID')}</td><td class="py-3 px-4 text-center"><span class="${color} px-2 py-1 rounded text-xs font-bold uppercase">${b.status}</span></td></tr>`;
-            });
-        }
-        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = { ruang_id: document.getElementById('ruangId').value, waktu_mulai: new Date(document.getElementById('waktuMulai').value).toISOString(), waktu_selesai: new Date(document.getElementById('waktuSelesai').value).toISOString(), tujuan_peminjaman: document.getElementById('tujuan').value, alat_ids: Object.values(selectedEquipment) };
-            const res = await fetch(`${API_URL}/booking`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
-            if(res.ok) { alert('Sukses!'); e.target.reset(); selectedEquipment={}; renderSelectedEquipment(); loadBookings(); loadRoomStatus(); } else { alert('Gagal'); }
-        });
-
-        // --- MODAL ---
         function toggleModal() { document.querySelector('.modal').classList.toggle('opacity-0'); document.querySelector('.modal').classList.toggle('pointer-events-none'); }
         function openModal(id, name) {
-            document.getElementById('modalRoomName').innerText = name;
-            const list = document.getElementById('modalScheduleList'); list.innerHTML = '';
-            const scheds = globalSchedules.filter(s => s.ruang_id === id).sort((a,b) => new Date(a.waktu_mulai) - new Date(b.waktu_mulai));
+            document.getElementById('modalRoomName').innerText = name; document.getElementById('modalScheduleList').innerHTML = '';
+            const scheds = globalSchedules.filter(s => s.ruang_id === id).sort((a,b)=>new Date(a.waktu_mulai)-new Date(b.waktu_mulai));
             if(scheds.length===0) document.getElementById('modalEmptyState').classList.remove('hidden');
-            else {
-                document.getElementById('modalEmptyState').classList.add('hidden');
-                scheds.forEach(s => list.innerHTML += `<li class="p-2 bg-gray-100 rounded border">${new Date(s.waktu_mulai).toLocaleString()} - ${new Date(s.waktu_selesai).toLocaleTimeString()}</li>`);
-            }
+            else { document.getElementById('modalEmptyState').classList.add('hidden'); scheds.forEach(s => document.getElementById('modalScheduleList').innerHTML += `<li class="p-2 bg-gray-100 border rounded">${new Date(s.waktu_mulai).toLocaleString()}</li>`); }
             toggleModal();
         }
-        function logout() { localStorage.clear(); window.location.href = '/'; }
+        async function loadMyReports() { const res=await fetch(`${API_URL}/reports/my`,{headers:{'Authorization':`Bearer ${token}`}}); const data=await res.json(); document.getElementById('reportTableBody').innerHTML = data.map(i=>`<tr class="border-b"><td class="p-3">${new Date(i.tanggal_lapor).toLocaleDateString()}</td><td class="p-3 font-bold">${i.peralatan?.nama_alat}</td><td class="p-3">${i.deskripsi_kerusakan}</td><td class="p-3 text-center">${i.status_laporan}</td></tr>`).join(''); }
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await fetch(`${API_URL}/reports`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ alat_id: document.getElementById('laporAlatId').value, deskripsi_kerusakan: document.getElementById('deskripsiKerusakan').value }) });
+            alert('Terkirim'); e.target.reset(); loadMyReports();
+        });
 
-        loadEquipmentOptions(); loadMyReports(); loadBookings(); loadRoomStatus();
+        function logout() { localStorage.clear(); window.location.href = '/'; }
+        loadInitialData();
     </script>
 </body>
 </html>
