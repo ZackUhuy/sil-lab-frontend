@@ -8,6 +8,8 @@
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        .group-detail { transition: all 0.3s ease-in-out; }
+        .hidden-row { display: none; }
         .modal { transition: opacity 0.25s ease; }
     </style>
 </head>
@@ -26,7 +28,7 @@
         <!-- Navigasi Tab -->
         <div class="mb-6 bg-white rounded-lg shadow-sm p-1 flex flex-wrap gap-1">
             <button onclick="showTab('peminjaman')" id="tab-peminjaman" class="tab-button flex-grow md:flex-1 py-3 px-2 rounded-md text-sm font-bold text-center bg-blue-600 text-white transition">
-                📅 Jadwal
+                📅 Jadwal & Peminjaman
             </button>
             <button onclick="showTab('ruangan')" id="tab-ruangan" class="tab-button flex-grow md:flex-1 py-3 px-2 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition">
                 🏢 Ruangan
@@ -34,17 +36,17 @@
             <button onclick="showTab('peralatan')" id="tab-peralatan" class="tab-button flex-grow md:flex-1 py-3 px-2 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition">
                 📦 Alat
             </button>
-            <!-- TAB BARU -->
             <button onclick="showTab('laporan')" id="tab-laporan" class="tab-button flex-grow md:flex-1 py-3 px-2 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition">
                 🛠️ Kerusakan
             </button>
         </div>
 
-        <!-- === TAB 1: MANAJEMEN JADWAL & PEMINJAMAN === -->
+        <!-- === TAB 1: MANAJEMEN JADWAL & PEMINJAMAN (GROUPED) === -->
         <div id="content-peminjaman" class="tab-content active">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- FORM TAMBAH JADWAL MANUAL -->
-                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow h-fit border border-gray-200">
+                
+                <!-- FORM TAMBAH JADWAL MANUAL (KIRI) -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow h-fit border border-gray-200 sticky top-24">
                     <h3 class="text-lg font-bold mb-4 text-gray-800 border-b pb-3">Tambah Jadwal Manual</h3>
                     <form id="form-tambah-jadwal" class="space-y-3">
                         <div>
@@ -52,8 +54,8 @@
                             <select id="jadwal_ruang_id" class="w-full p-2 border rounded bg-gray-50" required><option value="">Memuat...</option></select>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mulai</label><input type="datetime-local" id="jadwal_mulai" class="w-full p-2 border rounded bg-gray-50 text-sm" required></div>
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Selesai</label><input type="datetime-local" id="jadwal_selesai" class="w-full p-2 border rounded bg-gray-50 text-sm" required></div>
+                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mulai (Sesi 1)</label><input type="datetime-local" id="jadwal_mulai" class="w-full p-2 border rounded bg-gray-50 text-sm" required></div>
+                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Selesai (Sesi 1)</label><input type="datetime-local" id="jadwal_selesai" class="w-full p-2 border rounded bg-gray-50 text-sm" required></div>
                         </div>
                         <div class="bg-blue-50 p-3 rounded border border-blue-100">
                             <div class="flex items-center mb-2">
@@ -65,19 +67,38 @@
                                 <input type="number" id="repeat_count" class="w-full p-2 border rounded bg-white text-sm" value="16" min="2" max="20">
                             </div>
                         </div>
-                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Keterangan</label><textarea id="jadwal_tujuan" class="w-full p-2 border rounded bg-gray-50 text-sm" rows="2" required></textarea></div>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 font-medium shadow">Simpan Jadwal</button>
+                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Keterangan Kegiatan</label><textarea id="jadwal_tujuan" class="w-full p-2 border rounded bg-gray-50 text-sm" rows="2" placeholder="Contoh: Kuliah Algoritma A" required></textarea></div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 font-medium shadow transition">Simpan Jadwal</button>
                     </form>
                 </div>
-                <!-- TABEL DAFTAR -->
+
+                <!-- TABEL DAFTAR (KANAN) -->
                 <div class="lg:col-span-2 space-y-6">
+                    <!-- 1. TABEL REQUEST PENDING (PRIORITAS) -->
                     <div class="bg-white rounded-lg shadow overflow-hidden border border-yellow-200">
-                        <div class="p-4 bg-yellow-50 border-b border-yellow-200 flex justify-between items-center"><h3 class="font-bold text-yellow-800">🔔 Permintaan Masuk (Pending)</h3><button onclick="loadAllBookings()" class="text-blue-600 text-sm hover:underline font-medium">🔄 Refresh</button></div>
-                        <div class="overflow-x-auto"><table class="min-w-full"><thead class="bg-gray-50 text-gray-600 text-xs uppercase"><tr><th class="py-2 px-4 text-left">User</th><th class="py-2 px-4 text-left">Info</th><th class="py-2 px-4 text-center">Aksi</th></tr></thead><tbody id="pendingTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody></table></div>
+                        <div class="p-4 bg-yellow-50 border-b border-yellow-200 flex justify-between items-center">
+                            <h3 class="font-bold text-yellow-800 flex items-center gap-2">🔔 Permintaan Masuk (Pending)</h3>
+                            <button onclick="loadAllBookings()" class="text-blue-600 text-sm hover:underline font-medium">🔄 Refresh</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-50 text-gray-600 text-xs uppercase"><tr><th class="py-2 px-4 text-left">User</th><th class="py-2 px-4 text-left">Info</th><th class="py-2 px-4 text-center">Aksi</th></tr></thead>
+                                <tbody id="pendingTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
                     </div>
+
+                    <!-- 2. TABEL JADWAL AKTIF (GROUPED) -->
                     <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
-                        <div class="p-4 bg-gray-50 border-b border-gray-200"><h3 class="font-bold text-gray-700">📅 Jadwal Terkonfirmasi</h3></div>
-                        <div class="overflow-x-auto"><table class="min-w-full"><thead class="bg-gray-100 text-gray-600 text-xs uppercase sticky top-0"><tr><th class="w-10"></th><th class="py-3 px-4 text-left">Kegiatan</th><th class="py-3 px-4 text-left">Ruangan</th><th class="py-3 px-4 text-left">Jadwal</th><th class="py-3 px-4 text-center">Aksi</th></tr></thead><tbody id="approvedTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody></table></div>
+                        <div class="p-4 bg-gray-50 border-b border-gray-200"><h3 class="font-bold text-gray-700">📅 Jadwal Terkonfirmasi (Per Kelas)</h3></div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-100 text-gray-600 text-xs uppercase sticky top-0">
+                                    <tr><th class="py-3 px-4 text-left w-10"></th><th class="py-3 px-4 text-left">Nama Kegiatan</th><th class="py-3 px-4 text-left">Ruangan</th><th class="py-3 px-4 text-left">Mulai</th><th class="py-3 px-4 text-center">Aksi</th></tr>
+                                </thead>
+                                <tbody id="approvedTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,46 +143,25 @@
             </div>
         </div>
 
-        <!-- === TAB 4: LAPORAN KERUSAKAN (BARU) === -->
+        <!-- === TAB 4: LAPORAN KERUSAKAN === -->
         <div id="content-laporan" class="tab-content">
             <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
                 <div class="p-5 border-b bg-gray-50 flex justify-between items-center">
-                    <div>
-                        <h3 class="text-lg font-bold text-red-800">Daftar Laporan Kerusakan</h3>
-                        <p class="text-xs text-gray-500">Pantau dan update status perbaikan alat di sini.</p>
-                    </div>
+                    <div><h3 class="text-lg font-bold text-red-800">Daftar Laporan Kerusakan</h3><p class="text-xs text-gray-500">Pantau dan update status perbaikan alat di sini.</p></div>
                     <button onclick="loadReports()" class="text-blue-600 text-sm hover:underline font-medium">🔄 Refresh Data</button>
                 </div>
-                
                 <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead class="bg-gray-100 text-gray-600 text-xs uppercase">
-                            <tr>
-                                <th class="py-3 px-6 text-left font-bold">Tanggal</th>
-                                <th class="py-3 px-6 text-left font-bold">Pelapor</th>
-                                <th class="py-3 px-6 text-left font-bold">Nama Alat</th>
-                                <th class="py-3 px-6 text-left font-bold">Deskripsi Masalah</th>
-                                <th class="py-3 px-6 text-center font-bold">Update Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-reports-body" class="text-gray-700 text-sm divide-y divide-gray-100">
-                            <!-- Data Laporan dimuat di sini -->
-                        </tbody>
-                    </table>
+                    <table class="min-w-full"><thead class="bg-gray-100 text-gray-600 text-xs uppercase"><tr><th class="py-3 px-6 text-left font-bold">Tanggal</th><th class="py-3 px-6 text-left font-bold">Pelapor</th><th class="py-3 px-6 text-left font-bold">Nama Alat</th><th class="py-3 px-6 text-left font-bold">Deskripsi Masalah</th><th class="py-3 px-6 text-center font-bold">Update Status</th></tr></thead><tbody id="table-reports-body" class="text-gray-700 text-sm divide-y divide-gray-100"></tbody></table>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- MODAL JADWAL -->
+    <!-- MODAL JADWAL RUANGAN -->
     <div id="scheduleModal" class="hidden fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
         <div class="absolute w-full h-full bg-gray-900 opacity-50" onclick="toggleModal()"></div>
         <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[80vh] p-6">
-            <div class="flex justify-between mb-4 border-b pb-2">
-                <h3 class="text-lg font-bold text-gray-800" id="modalRoomName">Jadwal</h3>
-                <button onclick="toggleModal()" class="text-gray-500 hover:text-red-500 font-bold">✕</button>
-            </div>
+            <div class="flex justify-between mb-4 border-b pb-2"><h3 class="text-lg font-bold text-gray-800" id="modalRoomName">Jadwal</h3><button onclick="toggleModal()" class="text-gray-500 hover:text-red-500 font-bold">✕</button></div>
             <ul id="modalScheduleList" class="space-y-2 text-sm"></ul>
             <p id="modalEmpty" class="text-center text-gray-400 text-sm hidden">Tidak ada jadwal aktif.</p>
         </div>
@@ -190,51 +190,7 @@
             } catch(e) { alert(e.message); }
         }
 
-        // --- LAPORAN KERUSAKAN LOGIC ---
-        async function loadReports() {
-            try {
-                const res = await fetch(`${API_URL}/reports/all`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                const tbody = document.getElementById('table-reports-body');
-                tbody.innerHTML = '';
-
-                if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 italic">Tidak ada laporan kerusakan.</td></tr>'; return; }
-
-                data.forEach(item => {
-                    const select = `
-                        <select onchange="updateReportStatus('${item.id}', this.value)" class="bg-white border border-gray-300 text-xs rounded p-1 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="baru" ${item.status_laporan === 'baru' ? 'selected' : ''}>🔴 Baru</option>
-                            <option value="diproses" ${item.status_laporan === 'diproses' ? 'selected' : ''}>🔵 Diproses</option>
-                            <option value="selesai" ${item.status_laporan === 'selesai' ? 'selected' : ''}>🟢 Selesai</option>
-                        </select>
-                    `;
-                    
-                    const row = `
-                        <tr class="hover:bg-gray-50 border-b">
-                            <td class="py-3 px-6 text-gray-500">${new Date(item.tanggal_lapor).toLocaleDateString('id-ID')}</td>
-                            <td class="py-3 px-6 font-medium text-gray-800">${item.users?.nama || 'User'}</td>
-                            <td class="py-3 px-6 text-blue-600 font-semibold">${item.peralatan?.nama_alat || 'Alat Terhapus'}</td>
-                            <td class="py-3 px-6 text-gray-700 max-w-xs truncate" title="${item.deskripsi_kerusakan}">${item.deskripsi_kerusakan}</td>
-                            <td class="py-3 px-6 text-center">${select}</td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            } catch(e) { console.error(e); }
-        }
-
-        async function updateReportStatus(id, status) {
-            if(!confirm(`Ubah status laporan menjadi ${status.toUpperCase()}?`)) { loadReports(); return; }
-            try {
-                const res = await fetch(`${API_URL}/reports/${id}/status`, {
-                    method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ status_laporan: status })
-                });
-                if(res.ok) { alert('Status diperbarui!'); loadReports(); } else { alert('Gagal update status'); }
-            } catch(e) { alert('Error: ' + e.message); }
-        }
-
-        // --- JADWAL, RUANG, ALAT (LOGIC SAMA SEPERTI SEBELUMNYA) ---
+        // --- JADWAL & PEMINJAMAN (GROUPING + BATCH DELETE) ---
         function toggleRepeatInput() { const isChecked = document.getElementById('is_repeat').checked; document.getElementById('repeat_input_container').className = isChecked ? 'mt-2' : 'hidden mt-2'; }
         async function loadRuangOptions() { const res = await fetch(`${API_URL}/rooms`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); const s = document.getElementById('jadwal_ruang_id'); s.innerHTML = '<option value="">-- Pilih Ruangan --</option>'; data.forEach(r => { if(r.status!=='maintenance') s.innerHTML+=`<option value="${r.id}">${r.nama_ruang}</option>`}); }
         
@@ -248,16 +204,23 @@
             const pendingData = data.filter(i => i.status === 'pending');
             const approvedData = data.filter(i => i.status !== 'pending');
 
+            // RENDER PENDING
             if(pendingData.length===0) pendingBody.innerHTML = '<tr><td colspan="3" class="p-3 text-center italic text-gray-400">Tidak ada permintaan baru</td></tr>';
             pendingData.forEach(item => {
                 pendingBody.innerHTML += `<tr class="bg-yellow-50 border-b border-yellow-100"><td class="p-3"><div class="font-bold text-gray-800">${item.users?.nama||'User'}</div><div class="text-xs text-gray-500">${item.tujuan_peminjaman}</div></td><td class="p-3 text-xs"><div class="font-bold text-blue-600">${item.ruangan?.nama_ruang||'-'}</div><div>${new Date(item.waktu_mulai).toLocaleString()}</div></td><td class="p-3 text-center space-x-1"><button onclick="updateStatus('${item.id}', 'disetujui')" class="bg-green-500 text-white px-2 py-1 rounded text-xs">✓</button><button onclick="updateStatus('${item.id}', 'ditolak')" class="bg-red-500 text-white px-2 py-1 rounded text-xs">✕</button></td></tr>`;
             });
 
+            // RENDER APPROVED (GROUPING)
             const groups = {};
-            approvedData.forEach(item => { const key = item.tujuan_peminjaman.split(' (Pertemuan')[0] + '_' + item.ruang_id; if(!groups[key]) groups[key] = []; groups[key].push(item); });
+            approvedData.forEach(item => { 
+                const baseName = item.tujuan_peminjaman.split(' (Pertemuan')[0]; 
+                const key = baseName + '_' + item.ruang_id; 
+                if(!groups[key]) groups[key] = []; groups[key].push(item); 
+            });
 
             for (const key in groups) {
-                const items = groups[key]; const first = items[0]; const baseName = first.tujuan_peminjaman.split(' (Pertemuan')[0];
+                const items = groups[key]; const first = items[0]; 
+                const baseName = first.tujuan_peminjaman.split(' (Pertemuan')[0];
                 items.sort((a, b) => new Date(a.waktu_mulai) - new Date(b.waktu_mulai));
                 const groupId = 'group-' + Math.random().toString(36).substr(2, 9);
                 
@@ -273,18 +236,32 @@
         function toggleGroup(id) { const row = document.getElementById(id); const icon = document.getElementById('icon-'+id); if(row.classList.contains('hidden-row')) { row.classList.remove('hidden-row'); icon.style.transform='rotate(90deg)'; } else { row.classList.add('hidden-row'); icon.style.transform='rotate(0deg)'; } }
         async function deleteBatch(className, roomId) { if(!confirm('Hapus SEMUA jadwal kelas ini?')) return; const res = await fetch(`${API_URL}/booking`, {headers:{'Authorization':`Bearer ${token}`}}); const data = await res.json(); const toDel = data.filter(i => i.tujuan_peminjaman.split(' (Pertemuan')[0] === className && i.ruang_id === roomId && i.status === 'disetujui'); for(const i of toDel) await fetch(`${API_URL}/booking/${i.id}`, {method:'DELETE', headers:{'Authorization':`Bearer ${token}`}}); loadAllBookings(); }
 
-        async function handleTambahJadwal(e) { e.preventDefault(); /* ... (Sama spt sblmnya) ... */ const payload={ruang_id:document.getElementById('jadwal_ruang_id').value, waktu_mulai:new Date(document.getElementById('jadwal_mulai').value).toISOString(), waktu_selesai:new Date(document.getElementById('jadwal_selesai').value).toISOString(), tujuan_peminjaman:document.getElementById('jadwal_tujuan').value, is_repeat:document.getElementById('is_repeat').checked, repeat_count:document.getElementById('is_repeat').checked?parseInt(document.getElementById('repeat_count').value):1}; const res=await fetch(`${API_URL}/booking/admin`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify(payload)}); if(res.ok){alert('Sukses');e.target.reset();loadAllBookings();}else{alert('Gagal');} }
+        async function handleTambahJadwal(e) { e.preventDefault(); const payload={ruang_id:document.getElementById('jadwal_ruang_id').value, waktu_mulai:new Date(document.getElementById('jadwal_mulai').value).toISOString(), waktu_selesai:new Date(document.getElementById('jadwal_selesai').value).toISOString(), tujuan_peminjaman:document.getElementById('jadwal_tujuan').value, is_repeat:document.getElementById('is_repeat').checked, repeat_count:document.getElementById('is_repeat').checked?parseInt(document.getElementById('repeat_count').value):1}; const res=await fetch(`${API_URL}/booking/admin`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify(payload)}); if(res.ok){alert('Sukses');e.target.reset();loadAllBookings();}else{alert('Gagal');} }
         async function updateStatus(id, status) { await fetch(`${API_URL}/booking/${id}/status`, {method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status})}); loadAllBookings(); }
         
-        // --- Ruang & Alat ---
-        async function loadRuangan() { const res=await fetch(`${API_URL}/rooms`,{headers:{'Authorization':`Bearer ${token}`}}); const data=await res.json(); document.getElementById('table-ruangan-body').innerHTML = data.map(i=>`<tr class="border-b hover:bg-gray-50"><td class="py-3 px-6 font-bold text-gray-800">${i.nama_ruang}</td><td class="py-3 px-6">${i.status==='maintenance'?'<span class="bg-orange-100 text-orange-800 px-2 rounded text-xs">MTC</span>':'<span class="bg-green-100 text-green-800 px-2 rounded text-xs">OK</span>'}</td><td class="py-3 px-6 text-center"><button onclick="setMaintenance('${i.id}', '${i.status==='maintenance'?'tersedia':'maintenance'}')" class="text-blue-600 underline text-xs mr-2">Ubah Status</button><button onclick="deleteItem('rooms','${i.id}','Hapus?',loadRuangan)" class="text-red-500 text-lg">&times;</button></td></tr>`).join(''); }
-        async function setMaintenance(id,s){if(confirm('Ubah?'))await fetch(`${API_URL}/rooms/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:s})});loadRuangan();}
+        // --- RUANGAN (MAINTENANCE & SCHEDULE) ---
+        async function loadRuangan() { const res=await fetch(`${API_URL}/rooms`,{headers:{'Authorization':`Bearer ${token}`}}); const data=await res.json(); document.getElementById('table-ruangan-body').innerHTML = data.map(i=>`<tr class="border-b hover:bg-gray-50"><td class="py-3 px-6 font-bold text-gray-800">${i.nama_ruang}</td><td class="py-3 px-6">${i.status==='maintenance'?'<span class="bg-orange-100 text-orange-800 px-2 rounded text-xs">MTC</span>':'<span class="bg-green-100 text-green-800 px-2 rounded text-xs">OK</span>'}</td><td class="py-3 px-6 text-center"><button onclick="showRoomSchedule('${i.id}','${i.nama_ruang}')" class="text-blue-600 underline text-xs mr-2">Jadwal</button><button onclick="setMaintenance('${i.id}', '${i.status==='maintenance'?'tersedia':'maintenance'}')" class="text-orange-500 underline text-xs mr-2">Status</button><button onclick="deleteItem('rooms','${i.id}','Hapus?',loadRuangan)" class="text-red-500 text-lg">&times;</button></td></tr>`).join(''); }
+        async function setMaintenance(id,s){if(confirm('Ubah status?'))await fetch(`${API_URL}/rooms/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:s})});loadRuangan(); loadRuangOptions();}
         async function handleTambahRuang(e){e.preventDefault(); await fetch(`${API_URL}/rooms`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({nama_ruang:document.getElementById('nama_ruang').value,kapasitas:document.getElementById('kapasitas').value,lokasi:document.getElementById('lokasi').value})}); e.target.reset(); loadRuangan(); loadRuangOptions();}
         
+        // --- PERALATAN ---
         async function loadPeralatan() { const res=await fetch(`${API_URL}/equipment`,{headers:{'Authorization':`Bearer ${token}`}}); const data=await res.json(); document.getElementById('table-peralatan-body').innerHTML = data.map(i=>`<tr class="border-b hover:bg-gray-50"><td class="py-3 px-6">${i.nama_alat}</td><td class="py-3 px-6">${i.kategori}</td><td class="py-3 px-6 text-center">${i.jumlah_total}</td><td class="py-3 px-6 text-center">${i.kondisi}</td><td class="py-3 px-6 text-center"><button onclick="deleteItem('equipment','${i.id}','Hapus?',loadPeralatan)" class="text-red-500 text-lg">&times;</button></td></tr>`).join(''); }
         async function handleTambahPeralatan(e){e.preventDefault(); await fetch(`${API_URL}/equipment`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({nama_alat:document.getElementById('nama_alat').value,kategori:document.getElementById('kategori').value,jumlah_total:document.getElementById('jumlah_total').value,kondisi:document.getElementById('kondisi').value})}); e.target.reset(); loadPeralatan();}
 
-        function logout() { localStorage.clear(); window.location.href='index.html'; }
+        // --- LAPORAN ---
+        async function loadReports() { const res=await fetch(`${API_URL}/reports/all`,{headers:{'Authorization':`Bearer ${token}`}}); const data=await res.json(); const b=document.getElementById('table-reports-body'); b.innerHTML=''; if(data.length===0) b.innerHTML='<tr><td colspan="5" class="text-center py-4">Tidak ada laporan.</td></tr>'; else data.forEach(i=>{ b.innerHTML+=`<tr class="hover:bg-gray-50 border-b"><td class="py-3 px-6 text-xs">${new Date(i.tanggal_lapor).toLocaleDateString()}</td><td class="py-3 px-6 font-bold">${i.users?.nama||'User'}</td><td class="py-3 px-6 text-blue-600">${i.peralatan?.nama_alat||'-'}</td><td class="py-3 px-6 text-xs truncate max-w-xs" title="${i.deskripsi_kerusakan}">${i.deskripsi_kerusakan}</td><td class="py-3 px-6 text-center"><select onchange="updateReportStatus('${i.id}',this.value)" class="border rounded text-xs"><option value="baru" ${i.status_laporan==='baru'?'selected':''}>Baru</option><option value="diproses" ${i.status_laporan==='diproses'?'selected':''}>Diproses</option><option value="selesai" ${i.status_laporan==='selesai'?'selected':''}>Selesai</option></select></td></tr>`}); }
+        async function updateReportStatus(id,s){if(confirm('Update status?'))await fetch(`${API_URL}/reports/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status_laporan:s})});loadReports();}
+
+        // --- MODAL ---
+        function toggleModal() { document.getElementById('scheduleModal').classList.toggle('hidden'); }
+        async function showRoomSchedule(roomId, roomName) {
+            document.getElementById('modalRoomName').innerText = `Jadwal: ${roomName}`; const list = document.getElementById('modalScheduleList'); const empty = document.getElementById('modalEmpty'); list.innerHTML = '<li class="text-center">Loading...</li>'; empty.classList.add('hidden'); toggleModal();
+            const res = await fetch(`${API_URL}/booking/schedule`, { headers: { 'Authorization': `Bearer ${token}` } }); const schedules = await res.json();
+            const roomSched = schedules.filter(s => s.ruang_id === roomId).sort((a, b) => new Date(a.waktu_mulai) - new Date(b.waktu_mulai));
+            list.innerHTML = ''; if(roomSched.length === 0) empty.classList.remove('hidden'); else roomSched.forEach(s => { list.innerHTML += `<li class="bg-blue-50 p-2 rounded border-l-4 border-blue-500 text-gray-700"><span class="font-bold block">${new Date(s.waktu_mulai).toLocaleString()}</span> s/d ${new Date(s.waktu_selesai).toLocaleTimeString()}</li>`; });
+        }
+
+        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
         document.addEventListener('DOMContentLoaded', () => { loadAllBookings(); loadRuangan(); loadPeralatan(); loadReports(); loadRuangOptions(); 
             document.getElementById('form-tambah-jadwal').addEventListener('submit', handleTambahJadwal);
             document.getElementById('form-tambah-ruang').addEventListener('submit', handleTambahRuang);
