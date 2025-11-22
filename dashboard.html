@@ -193,72 +193,7 @@
         }
         showTab('booking');
 
-<<<<<<< HEAD
-        // --- STATUS RUANGAN (WARNA DIPERBAIKI) ---
-        async function loadRoomStatus() {
-            const container = document.getElementById('roomStatusContainer'); container.innerHTML = 'Loading...';
-            try {
-                const [resR, resS] = await Promise.all([fetch(`${API_URL}/rooms`, {headers:{'Authorization':`Bearer ${token}`}}), fetch(`${API_URL}/booking/schedule`, {headers:{'Authorization':`Bearer ${token}`}})]);
-                globalRooms = await resR.json(); globalSchedules = await resS.json();
-                container.innerHTML = ''; const select = document.getElementById('ruangId'); select.innerHTML = '<option disabled selected>-- Pilih Ruangan --</option>';
-                
-                globalRooms.forEach(r => {
-                    let cardClass = '';
-                    let statusText = '';
-                    let statusIcon = '';
-                    let detailText = '';
-                    let isClickable = true;
-
-                    // 1. Cek Maintenance (Prioritas Tertinggi)
-                    if (r.status === 'maintenance') {
-                        cardClass = 'bg-orange-100 border-orange-500 text-orange-900';
-                        statusText = 'PERBAIKAN';
-                        statusIcon = '🛠️';
-                        detailText = 'Tidak dapat digunakan';
-                        isClickable = false; 
-                        // Jangan tambahkan ke dropdown
-                    } else {
-                        // Tambahkan ke dropdown jika tidak maintenance
-                        select.innerHTML += `<option value="${r.id}">${r.nama_ruang}</option>`;
-
-                        // 2. Cek Jadwal (Busy/Free)
-                        const now = new Date();
-                        const busy = globalSchedules.some(s => s.ruang_id === r.id && new Date(s.waktu_mulai) <= now && new Date(s.waktu_selesai) >= now);
-                        
-                        if (busy) {
-                            cardClass = 'bg-red-100 border-red-500 text-red-900';
-                            statusText = 'DIPAKAI';
-                            statusIcon = '⛔';
-                            detailText = 'Sedang ada kegiatan';
-                        } else {
-                            cardClass = 'bg-green-100 border-green-500 text-green-900';
-                            statusText = 'TERSEDIA';
-                            statusIcon = '✅';
-                            detailText = 'Siap digunakan';
-                        }
-                    }
-
-                    const clickAttr = isClickable ? `onclick="openModal('${r.id}', '${r.nama_ruang}')"` : '';
-                    const cursorClass = isClickable ? 'cursor-pointer hover:shadow-lg hover:-translate-y-1' : 'cursor-not-allowed opacity-80';
-
-                    container.innerHTML += `
-                        <div ${clickAttr} class="p-5 border-l-4 rounded-lg shadow-sm transition duration-300 ${cardClass} ${cursorClass}">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="font-bold text-lg">${r.nama_ruang}</h3>
-                                <span class="text-xs font-bold px-2 py-1 rounded bg-white/50 border border-black/10">${statusIcon} ${statusText}</span>
-                            </div>
-                            <p class="text-sm opacity-80 mb-3">Kapasitas: ${r.kapasitas} Orang</p>
-                            <p class="text-xs font-semibold flex items-center gap-1">${detailText}</p>
-                        </div>
-                    `;
-                });
-            } catch(e) { container.innerHTML = 'Error loading data.'; }
-        }
-//
-        // --- LOADERS LAIN ---
-=======
         // --- LOAD DATA & UPDATE UI ---
->>>>>>> 12d48f6116d793717741f26d0b1d37e14f719384
         async function loadEquipmentOptions() {
              try {
                 const res = await fetch(`${API_URL}/equipment`, { headers: { 'Authorization': `Bearer ${token}` } });
