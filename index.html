@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SISIL </title>
+    <title>Login - SISIL</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
 
     <div class="bg-white p-8 rounded shadow-md w-96">
-        <h2 class="text-2xl font-bold mb-6 text-center text-blue-600">Masuk SISIL </h2>
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-extrabold text-blue-600">SISIL</h2>
+            <p class="text-xs text-gray-500 mt-1">Saintech’s Information System for Inventory and Laboratory</p>
+        </div>
         
         <form id="loginForm">
             <div class="mb-4">
@@ -20,18 +23,14 @@
                 <label class="block text-gray-700">Password</label>
                 <input type="password" id="password" class="w-full p-2 border rounded mt-1" required>
             </div>
-            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Login</button>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition">Login</button>
         </form>
-        <p class="mt-4 text-sm text-center">Belum punya akun? <a href="register.html" class="text-blue-500">Daftar</a></p>
+        <p class="mt-4 text-sm text-center">Belum punya akun? <a href="register.html" class="text-blue-500 hover:underline">Daftar</a></p>
     </div>
 
     <script>
         // --- KONFIGURASI URL ---
-        // Jika jalan di localhost laptop sendiri:
-        const API_URL = 'https://sil-lab-backend.vercel.app/api';
-        
-        // Jika ingin akses via HP/WiFi (Ganti angka IP sesuai ipconfig laptopmu):
-        // const API_URL = 'http://192.168.1.8:3000/api'; 
+        const API_URL = 'https://sil-lab-backend.vercel.app/api'; 
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -48,14 +47,11 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    // 1. Simpan Token & Data User ke Local Storage
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
-                    // 2. Tampilkan Pesan Selamat Datang
-                    alert(`Login Berhasil! Selamat datang, ${data.user.nama} (${data.user.role})`);
+                    alert(`Selamat datang di SISIL, ${data.user.nama}!`);
 
-                    // 3. LOGIKA REDIRECT BERDASARKAN ROLE (Admin vs User Biasa)
                     if (data.user.role === 'admin') {
                         window.location.href = 'admin-dashboard.html';
                     } else {
@@ -67,7 +63,7 @@
                 }
             } catch (error) {
                 console.error(error);
-                alert('Gagal menghubungi server. Pastikan Backend (npm run dev) sudah jalan.');
+                alert('Gagal menghubungi server.');
             }
         });
     </script>

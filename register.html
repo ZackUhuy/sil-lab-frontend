@@ -2,20 +2,24 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Daftar - SIL Lab</title>
+    <title>Daftar - SISIL</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded shadow-md w-96">
-        <h2 class="text-2xl font-bold mb-6 text-center text-green-600">Daftar Akun</h2>
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold text-green-600">Daftar SISIL</h2>
+            <p class="text-xs text-gray-500">Buat akun untuk mengakses laboratorium</p>
+        </div>
+        
         <form id="registerForm">
             <div class="mb-3">
                 <label class="block text-gray-700">Nama Lengkap</label>
                 <input type="text" id="nama" class="w-full p-2 border rounded mt-1" required>
             </div>
             <div class="mb-3">
-                <label class="block text-gray-700">Email</label>
-                <input type="email" id="email" class="w-full p-2 border rounded mt-1" required>
+                <label class="block text-gray-700">Email Institusi</label>
+                <input type="email" id="email" placeholder="... @uinsaid.ac.id" class="w-full p-2 border rounded mt-1" required>
             </div>
             <div class="mb-3">
                 <label class="block text-gray-700">Password</label>
@@ -29,14 +33,12 @@
                     <option value="asisten">Asisten</option>
                 </select>
             </div>
-            <button type="submit" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Daftar</button>
+            <button type="submit" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700 transition">Daftar</button>
         </form>
-        <p class="mt-4 text-sm text-center">Sudah punya akun? <a href="index.html" class="text-blue-500">Login</a></p>
+        <p class="mt-4 text-sm text-center">Sudah punya akun? <a href="index.html" class="text-blue-500 hover:underline">Login</a></p>
     </div>
 
     <script>
-        // --- PERBAIKAN ---
-        // Menambahkan API_URL yang konsisten dengan file lain
         const API_URL = 'https://sil-lab-backend.vercel.app/api';
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
@@ -49,8 +51,6 @@
             };
 
             try {
-                // Mengganti 'localhost' dengan variabel API_URL
-                // Sekarang URL akan menjadi: .../api/auth/register
                 const res = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -59,7 +59,7 @@
                 const data = await res.json();
                 
                 if (res.ok) {
-                    alert('Pendaftaran berhasil! Silakan cek email untuk konfirmasi (jika disetup di Supabase) atau langsung Login.');
+                    alert('Pendaftaran berhasil! Silakan cek email untuk verifikasi.');
                     window.location.href = 'index.html';
                 } else {
                     alert(data.error);
