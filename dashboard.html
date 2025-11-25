@@ -5,19 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard User - SISIL</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         /* Gaya Tab & Modal */
         .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
         .modal { transition: opacity 0.25s ease; }
         body.modal-active { overflow-x: hidden; overflow-y: hidden !important; }
 
-        /* Gaya Animasi Chatbot (BARU) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gaya Animasi Chatbot */
         #chatWindow { transition: transform 0.3s ease-in-out, opacity 0.3s; transform-origin: bottom right; }
         .chat-hidden { transform: scale(0); opacity: 0; pointer-events: none; }
         .chat-visible { transform: scale(1); opacity: 1; pointer-events: auto; }
         
-        /* Animasi Loading Chat */
+        /* Animasi Loading Chat (Titik-titik loncat) */
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
@@ -29,7 +36,9 @@
 
     <nav class="bg-blue-600 p-4 text-white flex justify-between items-center shadow-md sticky top-0 z-40">
         <div class="flex flex-col">
-            <h1 class="text-2xl font-bold tracking-wide">SISIL</h1>
+            <h1 class="text-2xl font-bold tracking-wide flex items-center gap-2">
+                <i class="fas fa-flask"></i> SISIL
+            </h1>
             <span class="text-xs text-blue-100 hidden md:block">SciTech Information System for Inventory and Laboratory</span>
         </div>
         <div class="flex items-center gap-4">
@@ -37,56 +46,94 @@
                 <span id="userName" class="block font-medium text-sm">User</span>
                 <span class="block text-xs text-blue-200">Mahasiswa/Dosen</span>
             </div>
-            <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded text-sm font-bold hover:bg-red-600 transition shadow-sm">
-                Logout
+            <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm font-bold transition shadow-sm">
+                <i class="fas fa-sign-out-alt"></i> Logout
             </button>
         </div>
     </nav>
 
-    <div class="container mx-auto p-6 max-w-7xl flex-grow mb-20"> <div class="mb-6 bg-white rounded-lg shadow-sm p-1 flex space-x-1 overflow-x-auto">
+    <div class="container mx-auto p-6 max-w-7xl flex-grow mb-24"> 
+        
+        <div class="mb-6 bg-white rounded-lg shadow-sm p-1 flex space-x-1 overflow-x-auto">
             <button onclick="showTab('booking')" id="tab-booking" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center bg-blue-600 text-white shadow transition whitespace-nowrap">
-                🏢 Pinjam Ruangan
+                <i class="fas fa-building mr-2"></i> Pinjam Ruangan
             </button>
             <button onclick="showTab('alat_only')" id="tab-alat_only" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
-                📦 Pinjam Alat Saja
+                <i class="fas fa-box-open mr-2"></i> Pinjam Alat Saja
             </button>
             <button onclick="showTab('ruangan')" id="tab-ruangan" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
-                📅 Info Jadwal
+                <i class="far fa-calendar-alt mr-2"></i> Info Jadwal
             </button>
             <button onclick="showTab('laporan')" id="tab-laporan" class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
-                ⚠️ Lapor Kerusakan
+                <i class="fas fa-exclamation-triangle mr-2"></i> Lapor Kerusakan
             </button>
         </div>
 
         <div id="content-booking" class="tab-content active">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-blue-100">
-                    <h2 class="text-xl font-bold mb-6 text-blue-800">Form Pinjam Ruangan</h2>
+                    <h2 class="text-xl font-bold mb-6 text-blue-800 flex items-center gap-2">
+                        <i class="fas fa-edit"></i> Form Pinjam Ruangan
+                    </h2>
                     <form id="bookingForm" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Ruangan</label>
-                            <select id="ruangId" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50" required><option value="" disabled selected>-- Pilih Ruangan --</option></select>
+                            <select id="ruangId" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                                <option value="" disabled selected>-- Memuat Ruangan --</option>
+                            </select>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label><input type="datetime-local" id="waktuMulai" class="w-full p-2 border rounded-lg text-sm" required></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label><input type="datetime-local" id="waktuSelesai" class="w-full p-2 border rounded-lg text-sm" required></div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label>
+                                <input type="datetime-local" id="waktuMulai" class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label>
+                                <input type="datetime-local" id="waktuSelesai" class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" required>
+                            </div>
                         </div>
+                        
                         <div class="border border-gray-200 bg-gray-50 p-3 rounded-lg">
                             <h3 class="font-bold text-xs text-gray-500 uppercase mb-2">Alat Tambahan (Opsional)</h3>
                             <div id="listAlatRoom" class="space-y-1 mb-2"></div>
                             <div class="flex space-x-2">
-                                <select id="selectAlatRoom" class="flex-grow p-2 border rounded-lg text-sm bg-white"><option value="" disabled selected>Pilih Alat...</option></select>
-                                <input type="number" id="qtyAlatRoom" min="1" value="1" class="w-14 p-2 border rounded-lg text-sm">
-                                <button type="button" onclick="addToolToRoom()" class="bg-gray-200 text-gray-700 px-3 rounded-lg text-sm hover:bg-gray-300">+</button>
+                                <select id="selectAlatRoom" class="flex-grow p-2 border rounded-lg text-sm bg-white outline-none">
+                                    <option value="" disabled selected>Pilih Alat...</option>
+                                </select>
+                                <input type="number" id="qtyAlatRoom" min="1" value="1" class="w-14 p-2 border rounded-lg text-sm outline-none">
+                                <button type="button" onclick="addToolToRoom()" class="bg-gray-200 text-gray-700 px-3 rounded-lg text-sm hover:bg-gray-300 font-bold">+</button>
                             </div>
                         </div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tujuan</label><textarea id="tujuan" class="w-full p-3 border rounded-lg text-sm" rows="2" required></textarea></div>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">Ajukan Ruangan</button>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tujuan / Kegiatan</label>
+                            <textarea id="tujuan" class="w-full p-3 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="Contoh: Diskusi Kelompok Fisika Dasar" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition shadow">Ajukan Peminjaman</button>
                     </form>
                 </div>
+                
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
-                    <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold text-gray-800">Riwayat Peminjaman</h2><button onclick="loadBookings()" class="text-sm text-blue-500 hover:text-blue-700 font-medium">Refresh</button></div>
-                    <div class="overflow-x-auto"><table class="min-w-full bg-white"><thead class="bg-gray-50 border-b"><tr class="text-gray-600 text-xs uppercase tracking-wider text-left"><th class="py-3 px-4">Jenis</th><th class="py-3 px-4">Detail</th><th class="py-3 px-4">Waktu</th><th class="py-3 px-4 text-center">Status</th></tr></thead><tbody id="bookingTableBody" class="text-gray-600 text-sm divide-y"></tbody></table></div>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-history mr-2"></i> Riwayat Peminjaman</h2>
+                        <button onclick="loadBookings()" class="text-sm text-blue-500 hover:text-blue-700 font-medium">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-50 border-b">
+                                <tr class="text-gray-600 text-xs uppercase tracking-wider text-left">
+                                    <th class="py-3 px-4">Jenis</th>
+                                    <th class="py-3 px-4">Detail</th>
+                                    <th class="py-3 px-4">Waktu</th>
+                                    <th class="py-3 px-4 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingTableBody" class="text-gray-600 text-sm divide-y">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -94,34 +141,53 @@
         <div id="content-alat_only" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-green-100">
-                    <h2 class="text-xl font-bold mb-6 text-green-800">Form Pinjam Alat</h2>
+                    <h2 class="text-xl font-bold mb-6 text-green-800 flex items-center gap-2">
+                        <i class="fas fa-tools"></i> Form Pinjam Alat
+                    </h2>
                     <form id="toolBookingForm" class="space-y-4">
                         <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
                             <h3 class="font-bold text-green-800 mb-2">Keranjang Alat</h3>
-                            <div id="listAlatOnly" class="space-y-2 mb-4 min-h-[50px]"><p class="text-xs text-gray-400 italic text-center py-2">Belum ada alat dipilih</p></div>
+                            <div id="listAlatOnly" class="space-y-2 mb-4 min-h-[50px]">
+                                <p class="text-xs text-gray-400 italic text-center py-2">Belum ada alat dipilih</p>
+                            </div>
                             <div class="flex flex-col space-y-2">
-                                <select id="selectAlatOnly" class="w-full p-2 border rounded-lg text-sm bg-white"><option value="" disabled selected>Pilih Alat...</option></select>
+                                <select id="selectAlatOnly" class="w-full p-2 border rounded-lg text-sm bg-white outline-none">
+                                    <option value="" disabled selected>Pilih Alat...</option>
+                                </select>
                                 <div class="flex space-x-2">
-                                    <input type="number" id="qtyAlatOnly" min="1" value="1" class="w-20 p-2 border rounded-lg text-sm" placeholder="Jml">
+                                    <input type="number" id="qtyAlatOnly" min="1" value="1" class="w-20 p-2 border rounded-lg text-sm outline-none" placeholder="Jml">
                                     <button type="button" onclick="addToolToOnly()" class="flex-grow bg-green-600 text-white p-2 rounded-lg text-sm hover:bg-green-700 font-medium">Tambah</button>
                                 </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label><input type="datetime-local" id="waktuMulaiTool" class="w-full p-2 border rounded-lg text-sm" required></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label><input type="datetime-local" id="waktuSelesaiTool" class="w-full p-2 border rounded-lg text-sm" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label><input type="datetime-local" id="waktuMulaiTool" class="w-full p-2 border rounded-lg text-sm outline-none" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label><input type="datetime-local" id="waktuSelesaiTool" class="w-full p-2 border rounded-lg text-sm outline-none" required></div>
                         </div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tujuan</label><textarea id="tujuanTool" class="w-full p-3 border rounded-lg text-sm" rows="2" required></textarea></div>
-                        <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition">Ajukan Peminjaman</button>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tujuan</label><textarea id="tujuanTool" class="w-full p-3 border rounded-lg text-sm outline-none" rows="2" required></textarea></div>
+                        <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition shadow">Ajukan Peminjaman</button>
                     </form>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
                     <div class="flex justify-between items-center mb-4 border-b pb-2">
-                        <h3 class="font-bold text-gray-700 flex items-center gap-2">📦 Info Stok Alat Real-time</h3>
-                        <button onclick="loadEquipmentOptions()" class="text-blue-600 text-sm hover:underline">🔄 Refresh Stok</button>
+                        <h3 class="font-bold text-gray-700 flex items-center gap-2"><i class="fas fa-boxes"></i> Info Stok Alat Real-time</h3>
+                        <button onclick="loadEquipmentOptions()" class="text-blue-600 text-sm hover:underline">
+                            <i class="fas fa-sync-alt"></i> Refresh Stok
+                        </button>
                     </div>
                     <div class="overflow-x-auto max-h-[500px]">
-                        <table class="min-w-full"><thead class="bg-gray-100 text-gray-600 text-xs uppercase sticky top-0"><tr><th class="py-3 px-4 text-left">Nama Alat</th><th class="py-3 px-4 text-left">Kategori</th><th class="py-3 px-4 text-center">Total</th><th class="py-3 px-4 text-center">Tersedia</th><th class="py-3 px-4 text-center">Kondisi</th></tr></thead><tbody id="stockTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody></table>
+                        <table class="min-w-full">
+                            <thead class="bg-gray-100 text-gray-600 text-xs uppercase sticky top-0">
+                                <tr>
+                                    <th class="py-3 px-4 text-left">Nama Alat</th>
+                                    <th class="py-3 px-4 text-left">Kategori</th>
+                                    <th class="py-3 px-4 text-center">Total</th>
+                                    <th class="py-3 px-4 text-center">Tersedia</th>
+                                    <th class="py-3 px-4 text-center">Kondisi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -129,25 +195,48 @@
 
         <div id="content-ruangan" class="tab-content">
             <div class="mb-6 flex justify-between items-end border-b pb-2 border-gray-200">
-                <h2 class="text-2xl font-bold text-gray-800">Status Ruangan Real-time</h2>
-                <button onclick="loadRoomStatus()" class="text-blue-600 text-sm hover:underline flex items-center gap-1">🔄 Refresh</button>
+                <h2 class="text-2xl font-bold text-gray-800"><i class="fas fa-door-open mr-2"></i> Status Ruangan</h2>
+                <button onclick="loadRoomStatus()" class="text-blue-600 text-sm hover:underline flex items-center gap-1">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
             </div>
-            <div id="roomStatusContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+            <div id="roomStatusContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                </div>
         </div>
 
         <div id="content-laporan" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-red-100">
-                    <h2 class="text-xl font-bold mb-6 text-red-700">⚠️ Lapor Kerusakan</h2>
+                    <h2 class="text-xl font-bold mb-6 text-red-700 flex items-center gap-2">
+                        <i class="fas fa-exclamation-circle"></i> Lapor Kerusakan
+                    </h2>
                     <form id="reportForm" class="space-y-4">
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Alat</label><select id="laporAlatId" class="w-full p-2.5 border rounded-lg" required><option value="" disabled selected>Memuat...</option></select></div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Masalah</label><textarea id="deskripsiKerusakan" class="w-full p-3 border rounded-lg text-sm" rows="4" required></textarea></div>
-                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700">Kirim Laporan</button>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Alat</label>
+                            <select id="laporAlatId" class="w-full p-2.5 border rounded-lg bg-gray-50 outline-none" required><option value="" disabled selected>Memuat...</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Masalah</label>
+                            <textarea id="deskripsiKerusakan" class="w-full p-3 border rounded-lg text-sm bg-gray-50 outline-none" rows="4" placeholder="Jelaskan kerusakan secara detail..." required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition shadow">Kirim Laporan</button>
                     </form>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Riwayat Laporan</h2>
-                    <div class="overflow-x-auto"><table class="min-w-full bg-white"><thead class="bg-gray-50 border-b"><tr class="text-gray-600 text-xs uppercase"><th class="py-3 px-4 text-left">Tanggal</th><th class="py-3 px-4 text-left">Alat</th><th class="py-3 px-4 text-left">Masalah</th><th class="py-3 px-4 text-center">Status</th></tr></thead><tbody id="reportTableBody" class="text-gray-600 text-sm divide-y"></tbody></table></div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-50 border-b">
+                                <tr class="text-gray-600 text-xs uppercase">
+                                    <th class="py-3 px-4 text-left">Tanggal</th>
+                                    <th class="py-3 px-4 text-left">Alat</th>
+                                    <th class="py-3 px-4 text-left">Masalah</th>
+                                    <th class="py-3 px-4 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody" class="text-gray-600 text-sm divide-y"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -156,21 +245,23 @@
     <div id="scheduleModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
         <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50" onclick="toggleModal()"></div>
         <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[80vh] transform transition-all scale-95 p-6">
-            <div class="flex justify-between items-center pb-3 border-b"><p class="text-xl font-bold" id="modalRoomName">Jadwal</p><button onclick="toggleModal()" class="text-red-500 font-bold">✕</button></div>
-            <ul id="modalScheduleList" class="space-y-2 mt-4 text-sm"></ul><p id="modalEmptyState" class="text-gray-400 italic text-center mt-4 hidden text-sm">Kosong.</p>
+            <div class="flex justify-between items-center pb-3 border-b">
+                <p class="text-xl font-bold" id="modalRoomName">Jadwal</p>
+                <button onclick="toggleModal()" class="text-red-500 font-bold hover:text-red-700">&times;</button>
+            </div>
+            <ul id="modalScheduleList" class="space-y-2 mt-4 text-sm"></ul>
+            <p id="modalEmptyState" class="text-gray-400 italic text-center mt-4 hidden text-sm">Tidak ada jadwal aktif.</p>
         </div>
     </div>
 
     <button onclick="toggleChat()" class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl transition transform hover:scale-110 z-50 flex items-center justify-center w-14 h-14">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-        </svg>
+        <i class="fas fa-comment-dots text-2xl"></i>
     </button>
 
     <div id="chatWindow" class="fixed bottom-24 right-6 w-80 md:w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 flex flex-col chat-hidden h-[500px]">
-        <div class="bg-blue-600 text-white p-4 rounded-t-xl flex justify-between items-center">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 rounded-t-xl flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <h3 class="font-bold">Asisten SISIL 🤖</h3>
             </div>
             <button onclick="toggleChat()" class="text-white hover:text-gray-200 font-bold text-lg">&times;</button>
@@ -178,19 +269,17 @@
         
         <div id="chatMessages" class="flex-grow p-4 overflow-y-auto space-y-3 bg-gray-50">
             <div class="flex justify-start">
-                <div class="bg-white border border-gray-200 p-3 rounded-br-lg rounded-tr-lg rounded-bl-lg text-sm text-gray-700 shadow-sm max-w-[80%]">
-                    Halo! Saya AI Asisten SISIL. Tanya saya tentang ketersediaan ruangan, jadwal, atau cara pinjam alat! 😊
+                <div class="bg-white border border-gray-200 p-3 rounded-br-lg rounded-tr-lg rounded-bl-lg text-sm text-gray-700 shadow-sm max-w-[85%]">
+                    Halo! Saya AI Cerdas. Saya terhubung ke database lab. Tanya saya "Ruangan mana yang kosong besok?" atau "Apakah alat mikroskop tersedia?" 😊
                 </div>
             </div>
         </div>
 
         <div class="p-3 border-t border-gray-200 bg-white rounded-b-xl">
             <form id="chatForm" class="flex gap-2">
-                <input type="text" id="chatInput" class="flex-grow p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tanya sesuatu..." autocomplete="off">
-                <button type="submit" class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                    </svg>
+                <input type="text" id="chatInput" class="flex-grow p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" placeholder="Tanya ketersediaan..." autocomplete="off">
+                <button type="submit" class="bg-blue-600 text-white p-2 px-3 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-paper-plane"></i>
                 </button>
             </form>
         </div>
@@ -198,7 +287,9 @@
 
     <script>
         // --- 1. KONFIGURASI API & TOKEN ---
+        // Ganti URL ini jika backend Anda berjalan di localhost saat development
         const API_URL = 'https://sil-lab-backend.vercel.app/api'; 
+        
         const token = localStorage.getItem('token');
         if (!token) window.location.href = '/'; // Redirect jika belum login
         
@@ -228,7 +319,7 @@
             else if (tabName === 'laporan') { loadMyReports(); loadEquipmentOptions(); }
         }
 
-        // --- 3. DATA & LOGIKA PEMINJAMAN (LENGKAP) ---
+        // --- 3. LOGIKA DATA & FORM ---
         async function loadEquipmentOptions() {
              try {
                 const res = await fetch(`${API_URL}/equipment`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -268,7 +359,7 @@
             } catch (e) { console.error(e); }
         }
 
-        // Fungsi Helper Keranjang Alat
+        // --- Helper Keranjang Alat ---
         function addToolToRoom() { const id=document.getElementById('selectAlatRoom').value; const qty=parseInt(document.getElementById('qtyAlatRoom').value); if(validateTool(id,qty)) { selectedToolsRoom[id]={id,jumlah:qty}; renderTools('listAlatRoom',selectedToolsRoom,'removeToolFromRoom'); } }
         function removeToolFromRoom(id) { delete selectedToolsRoom[id]; renderTools('listAlatRoom',selectedToolsRoom,'removeToolFromRoom'); }
         
@@ -292,7 +383,7 @@
             }
         }
 
-        // --- SUBMIT FORM ---
+        // --- SUBMIT BOOKING ---
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await submitBooking({
@@ -332,7 +423,7 @@
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
             data.forEach(b => {
-                let typeIcon = b.ruangan ? '🏢 Ruang' : '📦 Alat';
+                let typeIcon = b.ruangan ? '<i class="fas fa-building text-blue-500"></i> Ruang' : '<i class="fas fa-tools text-green-500"></i> Alat';
                 let detail = b.ruangan ? `<span class="font-bold text-blue-600">${b.ruangan.nama_ruang}</span>` : '<span class="text-gray-400 italic">Tanpa Ruangan</span>';
                 if (b.peminjaman_detail_alat?.length > 0) detail += `<div class="text-xs text-gray-500 mt-1">Alat: ${b.peminjaman_detail_alat.map(t=>t.jumlah_pinjam+'x '+t.peralatan?.nama_alat).join(', ')}</div>`;
                 let color = b.status==='pending'?'text-yellow-600 bg-yellow-100':(b.status==='disetujui'?'text-green-600 bg-green-100':'text-red-600 bg-red-100');
@@ -343,7 +434,7 @@
         // --- 4. STATUS RUANGAN ---
         async function loadRoomStatus() {
             const c = document.getElementById('roomStatusContainer');
-            c.innerHTML = 'Loading...';
+            c.innerHTML = '<p class="text-gray-500">Memuat status ruangan...</p>';
             try {
                 const [resR, resS] = await Promise.all([fetch(`${API_URL}/rooms`, {headers:{'Authorization':`Bearer ${token}`}}), fetch(`${API_URL}/booking/schedule`, {headers:{'Authorization':`Bearer ${token}`}})]);
                 globalRooms = await resR.json();
@@ -360,7 +451,7 @@
                     }
                     select.innerHTML += `<option value="${r.id}">${r.nama_ruang}</option>`;
                     const busy = globalSchedules.some(s => s.ruang_id === r.id && new Date(s.waktu_mulai) <= new Date() && new Date(s.waktu_selesai) >= new Date());
-                    c.innerHTML += `<div onclick="openModal('${r.id}','${r.nama_ruang}')" class="p-4 border-l-4 ${busy?'bg-red-100 border-red-500 text-red-900':'bg-green-100 border-green-500 text-green-900'} rounded cursor-pointer hover:shadow-lg"><h3 class="font-bold">${r.nama_ruang}</h3><span class="text-xs font-bold">${busy?'DIPAKAI':'TERSEDIA'}</span></div>`;
+                    c.innerHTML += `<div onclick="openModal('${r.id}','${r.nama_ruang}')" class="p-4 border-l-4 ${busy?'bg-red-100 border-red-500 text-red-900':'bg-green-100 border-green-500 text-green-900'} rounded cursor-pointer hover:shadow-lg transition"><h3 class="font-bold">${r.nama_ruang}</h3><span class="text-xs font-bold">${busy?'DIPAKAI':'TERSEDIA'}</span></div>`;
                 });
             } catch(e) {}
         }
@@ -379,12 +470,12 @@
         }
 
         // --- 5. LAPORAN ---
-        async function loadMyReports() { const res=await fetch(`${API_URL}/reports/my`,{headers:{'Authorization':`Bearer ${token}`}}); const data=await res.json(); document.getElementById('reportTableBody').innerHTML = data.map(i=>`<tr class="border-b"><td class="p-3">${new Date(i.tanggal_lapor).toLocaleDateString()}</td><td class="p-3 font-bold">${i.peralatan?.nama_alat}</td><td class="p-3">${i.deskripsi_kerusakan}</td><td class="p-3 text-center">${i.status_laporan}</td></tr>`).join(''); }
+        async function loadMyReports() { const res=await fetch(`${API_URL}/reports/my`,{headers:{'Authorization':`Bearer ${token}`}}); const data=await res.json(); document.getElementById('reportTableBody').innerHTML = data.map(i=>`<tr class="border-b"><td class="p-3">${new Date(i.tanggal_lapor).toLocaleDateString()}</td><td class="p-3 font-bold">${i.peralatan?.nama_alat||'-'}</td><td class="p-3">${i.deskripsi_kerusakan}</td><td class="p-3 text-center"><span class="bg-gray-100 text-xs px-2 py-1 rounded border border-gray-300">${i.status_laporan}</span></td></tr>`).join(''); }
         document.getElementById('reportForm').addEventListener('submit', async (e) => { e.preventDefault(); await fetch(`${API_URL}/reports`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ alat_id: document.getElementById('laporAlatId').value, deskripsi_kerusakan: document.getElementById('deskripsiKerusakan').value }) }); alert('Terkirim'); e.target.reset(); loadMyReports(); });
 
         function logout() { localStorage.clear(); window.location.href = 'index.html'; }
         
-        // --- 6. LOGIKA CHATBOT AI (FITUR BARU) ---
+        // --- 6. LOGIKA CHATBOT AI (INTEGRASI BACKEND) ---
         function toggleChat() {
             const chat = document.getElementById('chatWindow');
             if(chat.classList.contains('chat-hidden')){
@@ -408,10 +499,10 @@
             input.value = '';
             
             // 2. Tampilkan Loading AI
-            const loadingId = addMessage('Sedang memproses...', 'ai', true);
+            const loadingId = addMessage('Sedang mengecek database...', 'ai', true);
 
             try {
-                // Request ke Backend AI
+                // Request ke Backend AI Controller (GEMINI)
                 const res = await fetch(`${API_URL}/ai/chat`, {
                     method: 'POST',
                     headers: { 
@@ -423,13 +514,19 @@
 
                 const data = await res.json();
                 
-                // Hapus loading, tampilkan jawaban
+                // Hapus loading, tampilkan jawaban dari Backend
                 removeMessage(loadingId);
-                addMessage(data.reply || "Maaf, saya tidak mengerti.", 'ai');
+                
+                if (data.reply) {
+                    addMessage(data.reply, 'ai');
+                } else {
+                    addMessage("Maaf, server AI tidak merespon.", 'ai');
+                }
 
             } catch (error) {
+                console.error(error);
                 removeMessage(loadingId);
-                addMessage("Maaf, terjadi kesalahan koneksi.", 'ai');
+                addMessage("Maaf, gagal terhubung ke server AI.", 'ai');
             }
         });
 
@@ -446,7 +543,8 @@
                 bubble.innerHTML = `<div class="flex space-x-1"><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce-custom"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce-custom" style="animation-delay: 0.1s"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce-custom" style="animation-delay: 0.2s"></div></div>`;
                 div.id = 'loadingMsg';
             } else {
-                bubble.innerHTML = text.replace(/\n/g, '<br>');
+                // Convert \n dari Gemini jadi <br>
+                bubble.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); // Bold markdown support
             }
 
             div.appendChild(bubble);
@@ -462,8 +560,8 @@
 
         // --- INIT ---
         showTab('booking');
-        loadEquipmentOptions(); // Load awal untuk dropdown
-        loadRoomStatus(); // Load awal untuk status ruang
+        loadEquipmentOptions(); 
+        loadRoomStatus(); 
     </script>
 </body>
 </html>
