@@ -130,8 +130,7 @@
                                     <th class="py-3 px-4 text-center">Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="bookingTableBody" class="text-gray-600 text-sm divide-y">
-                                </tbody>
+                            <tbody id="bookingTableBody" class="text-gray-600 text-sm divide-y"></tbody>
                         </table>
                     </div>
                 </div>
@@ -200,8 +199,7 @@
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
-            <div id="roomStatusContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                </div>
+            <div id="roomStatusContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
         </div>
 
         <div id="content-laporan" class="tab-content">
@@ -287,19 +285,17 @@
 
     <script>
         // --- 1. KONFIGURASI API & TOKEN ---
-        // Ganti URL ini jika backend Anda berjalan di localhost saat development
         const API_URL = 'https://sil-lab-backend.vercel.app/api'; 
         
         const token = localStorage.getItem('token');
-        if (!token) window.location.href = '/'; // Redirect jika belum login
+        if (!token) window.location.href = '/'; 
         
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         document.getElementById('userName').innerText = user.nama || user.email || 'User';
 
-        // Variable Global
         let globalRooms = [], globalSchedules = [], globalEquipment = [];
-        let selectedToolsRoom = {}; // Untuk Tab Booking Ruang
-        let selectedToolsOnly = {}; // Untuk Tab Alat Saja
+        let selectedToolsRoom = {}; 
+        let selectedToolsOnly = {}; 
 
         // --- 2. NAVIGASI TAB ---
         function showTab(tabName) {
@@ -312,7 +308,6 @@
             document.getElementById(`tab-${tabName}`).classList.add('bg-blue-600', 'text-white', 'shadow');
             document.getElementById(`tab-${tabName}`).classList.remove('text-gray-600', 'hover:bg-gray-100');
             
-            // Load data sesuai tab
             if (tabName === 'booking') { loadBookings(); loadRoomStatus(); }
             else if (tabName === 'alat_only') { loadEquipmentOptions(); loadBookings(); }
             else if (tabName === 'ruangan') { loadRoomStatus(); }
@@ -330,14 +325,12 @@
                 const selLapor = document.getElementById('laporAlatId');
                 const tableStock = document.getElementById('stockTableBody');
 
-                // Reset Options
                 selRoom.innerHTML = '<option disabled selected>Pilih Alat...</option>';
                 selOnly.innerHTML = '<option disabled selected>Pilih Alat...</option>';
                 selLapor.innerHTML = '<option disabled selected>Pilih...</option>';
                 tableStock.innerHTML = '';
 
                 globalEquipment.forEach(item => {
-                    // Populate Dropdowns
                     const label = `${item.nama_alat} (Sisa: ${item.jumlah_tersedia})`;
                     if (item.jumlah_tersedia > 0) {
                         selRoom.innerHTML += `<option value="${item.id}">${label}</option>`;
@@ -345,7 +338,6 @@
                     }
                     selLapor.innerHTML += `<option value="${item.id}">${item.nama_alat}</option>`;
 
-                    // Populate Tabel Stok
                     const sisaColor = item.jumlah_tersedia === 0 ? 'text-red-600 font-bold' : (item.jumlah_tersedia < 5 ? 'text-orange-500 font-bold' : 'text-green-600 font-bold');
                     tableStock.innerHTML += `
                         <tr class="hover:bg-gray-50 border-b">
@@ -359,7 +351,6 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- Helper Keranjang Alat ---
         function addToolToRoom() { const id=document.getElementById('selectAlatRoom').value; const qty=parseInt(document.getElementById('qtyAlatRoom').value); if(validateTool(id,qty)) { selectedToolsRoom[id]={id,jumlah:qty}; renderTools('listAlatRoom',selectedToolsRoom,'removeToolFromRoom'); } }
         function removeToolFromRoom(id) { delete selectedToolsRoom[id]; renderTools('listAlatRoom',selectedToolsRoom,'removeToolFromRoom'); }
         
@@ -383,7 +374,6 @@
             }
         }
 
-        // --- SUBMIT BOOKING ---
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await submitBooking({
@@ -431,7 +421,7 @@
             });
         }
 
-        // --- 4. STATUS RUANGAN ---
+        // --- 4. STATUS RUANGAN (FIXED OPENMODAL) ---
         async function loadRoomStatus() {
             const c = document.getElementById('roomStatusContainer');
             c.innerHTML = '<p class="text-gray-500">Memuat status ruangan...</p>';
@@ -457,14 +447,31 @@
         }
 
         function toggleModal() { document.querySelector('.modal').classList.toggle('opacity-0'); document.querySelector('.modal').classList.toggle('pointer-events-none'); }
+        
         function openModal(id, name) {
             document.getElementById('modalRoomName').innerText = name;
             document.getElementById('modalScheduleList').innerHTML = '';
-            const scheds = globalSchedules.filter(s => s.ruang_id === id).sort((a,b)=>new Date(a.waktu_mulai)-new Date(b.waktu_mulai));
-            if(scheds.length===0) document.getElementById('modalEmptyState').classList.remove('hidden');
-            else {
+            
+            // Filter jadwal sesuai ruangan
+            const scheds = globalSchedules
+                .filter(s => s.ruang_id === id)
+                .sort((a,b) => new Date(a.waktu_mulai) - new Date(b.waktu_mulai));
+            
+            if(scheds.length === 0) {
+                document.getElementById('modalEmptyState').classList.remove('hidden');
+            } else {
                 document.getElementById('modalEmptyState').classList.add('hidden');
-                scheds.forEach(s => document.getElementById('modalScheduleList').innerHTML += `<li class="p-2 bg-gray-100 border rounded">${new Date(s.waktu_mulai).toLocaleString()}</li>`);
+                scheds.forEach(s => {
+                    // --- PERBAIKAN: Format Waktu Lengkap ---
+                    const mulai = new Date(s.waktu_mulai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                    const selesai = new Date(s.waktu_selesai).toLocaleTimeString('id-ID', { timeStyle: 'short' });
+
+                    document.getElementById('modalScheduleList').innerHTML += `
+                        <li class="p-2 bg-gray-50 border-l-4 border-blue-500 rounded text-sm text-gray-700">
+                            <span class="font-bold block">${mulai}</span>
+                            <span class="text-xs text-gray-500">sampai jam ${selesai}</span>
+                        </li>`;
+                });
             }
             toggleModal();
         }
@@ -475,7 +482,7 @@
 
         function logout() { localStorage.clear(); window.location.href = 'index.html'; }
         
-        // --- 6. LOGIKA CHATBOT AI (INTEGRASI BACKEND) ---
+        // --- 6. LOGIKA CHATBOT AI ---
         function toggleChat() {
             const chat = document.getElementById('chatWindow');
             if(chat.classList.contains('chat-hidden')){
@@ -543,8 +550,7 @@
                 bubble.innerHTML = `<div class="flex space-x-1"><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce-custom"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce-custom" style="animation-delay: 0.1s"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce-custom" style="animation-delay: 0.2s"></div></div>`;
                 div.id = 'loadingMsg';
             } else {
-                // Convert \n dari Gemini jadi <br>
-                bubble.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); // Bold markdown support
+                bubble.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
             }
 
             div.appendChild(bubble);
