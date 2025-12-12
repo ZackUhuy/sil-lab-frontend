@@ -1,60 +1,121 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SISIL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen font-sans">
 
-    <div class="bg-white p-8 rounded-xl shadow-lg w-96 transform transition hover:scale-105 duration-300">
+<body
+    class="bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center h-screen font-sans relative overflow-hidden">
+    <!-- Background Decoration -->
+    <div
+        class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
+    </div>
+    <div
+        class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+    </div>
+    <div
+        class="absolute -bottom-32 left-20 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000">
+    </div>
+
+    <div
+        class="bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md transform transition hover:scale-[1.01] duration-500 border border-white/50 relative z-10">
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-extrabold text-blue-600 tracking-tighter">SISIL</h1>
-            <p class="text-xs text-gray-500 mt-1 font-medium">SciTech Information System for Inventory and Laboratory</p>
+            <h1
+                class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 tracking-tight">
+                SISIL</h1>
+            <p class="text-xs text-gray-500 mt-1 font-medium">SciTech Information System for Inventory and Laboratory
+            </p>
         </div>
-        
+
         <form id="loginForm" class="space-y-5">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email Institusi</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-envelope text-gray-400"></i>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Email Institusi</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-envelope text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
                     </div>
-                    <input type="email" id="email" class="pl-10 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="nama@uinsaid.ac.id" required>
+                    <input type="email" id="email"
+                        class="pl-11 w-full p-3.5 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300 shadow-sm"
+                        placeholder="nama@uinsaid.ac.id" required>
                 </div>
             </div>
 
             <div>
-                <div class="flex justify-between items-center mb-1">
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                <div class="flex justify-between items-center mb-1.5 ml-1">
+                    <label class="block text-sm font-semibold text-gray-700">Password</label>
                     <!-- LINK LUPA PASSWORD -->
-                    <a href="forgot-password.html" class="text-xs text-blue-600 hover:underline font-semibold">Lupa Password?</a>
+                    <a href="forgot-password.html"
+                        class="text-xs text-blue-600 hover:text-blue-800 hover:underline font-bold transition">Lupa
+                        Password?</a>
                 </div>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-lock text-gray-400"></i>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
                     </div>
-                    <input type="password" id="password" class="pl-10 pr-10 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="••••••••" required>
-                    <button type="button" onclick="togglePassword('password', 'eyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none">
+                    <input type="password" id="password"
+                        class="pl-11 pr-11 w-full p-3.5 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300 shadow-sm"
+                        placeholder="••••••••" required>
+                    <button type="button" onclick="togglePassword('password', 'eyeIcon')"
+                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none">
                         <i id="eyeIcon" class="fas fa-eye"></i>
                     </button>
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700 transition shadow-md active:scale-95">
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-3.5 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/30 transform active:scale-95 text-lg cursor-pointer">
                 Masuk
             </button>
         </form>
 
         <p class="mt-6 text-sm text-center text-gray-600">
-            Belum punya akun? <a href="register.html" class="text-blue-600 hover:underline font-semibold">Daftar Sekarang</a>
+            Belum punya akun? <a href="register.html" class="text-blue-600 hover:underline font-semibold">Daftar
+                Sekarang</a>
         </p>
     </div>
 
     <script>
-        const API_URL = 'https://sil-lab-backend.vercel.app/api'; 
+        const API_URL = 'https://sil-lab-backend.vercel.app/api';
+
+        // CSS Animation for Blobs
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes blob {
+                0% { transform: translate(0px, 0px) scale(1); }
+                33% { transform: translate(30px, -50px) scale(1.1); }
+                66% { transform: translate(-20px, 20px) scale(0.9); }
+                100% { transform: translate(0px, 0px) scale(1); }
+            }
+            .animate-blob {
+                animation: blob 7s infinite;
+            }
+            .animation-delay-2000 {
+                animation-delay: 2s;
+            }
+            .animation-delay-4000 {
+                animation-delay: 4s;
+            }
+        `;
+        document.head.appendChild(style);
 
         function togglePassword(inputId, iconId) {
             const input = document.getElementById(inputId);
@@ -73,8 +134,10 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const btn = e.target.querySelector('button');
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memproses...';
+            btn.opacity = 0.7;
             btn.disabled = true;
 
             try {
@@ -89,18 +152,30 @@
                 if (res.ok) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    if (data.user.role === 'admin') window.location.href = 'admin-dashboard.html';
-                    else window.location.href = 'dashboard.html';
+
+                    const Toast = Swal.mixin({
+                        toast: true, position: 'top-end', showConfirmButton: false, timer: 1500,
+                        timerProgressBar: true, didOpen: (toast) => { toast.addEventListener('mouseenter', Swal.stopTimer); toast.addEventListener('mouseleave', Swal.resumeTimer); }
+                    });
+
+                    Toast.fire({ icon: 'success', title: 'Login Berhasil' });
+
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') window.location.href = 'admin-dashboard.html';
+                        else window.location.href = 'dashboard.html';
+                    }, 1500);
                 } else {
-                    alert(data.error || 'Login gagal.');
+                    Swal.fire({ icon: 'error', title: 'Login Gagal', text: data.error || 'Email atau password salah.' });
                 }
             } catch (error) {
-                alert('Gagal menghubungi server.');
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' });
             } finally {
-                btn.innerHTML = 'Masuk';
+                btn.innerHTML = originalText;
+                btn.opacity = 1;
                 btn.disabled = false;
             }
         });
     </script>
 </body>
+
 </html>

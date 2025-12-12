@@ -8,6 +8,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         .tab-content {
             display: none;
@@ -54,10 +77,11 @@
     </style>
 </head>
 
-<body class="bg-gray-100 font-sans min-h-screen">
+<body class="bg-slate-50 font-sans min-h-screen">
 
-    <nav class="bg-gray-900 p-4 text-white flex justify-between items-center shadow-lg sticky top-0 z-50">
-        <div class="flex items-center gap-2">
+    <nav
+        class="bg-gray-900/95 backdrop-blur-md p-4 text-white flex justify-between items-center shadow-lg sticky top-0 z-50 border-b border-gray-800">
+        <div class="flex items-center gap-3">
             <h1 class="font-bold text-xl tracking-wide"><i class="fas fa-server mr-2"></i>ADMIN PANEL SISIL</h1>
         </div>
         <div class="flex items-center gap-4">
@@ -73,9 +97,9 @@
     </nav>
 
     <div class="container mx-auto p-6 pb-24">
-        <div class="mb-6 bg-white rounded-lg shadow-sm p-1 flex flex-wrap gap-1">
+        <div class="mb-8 bg-white rounded-2xl shadow-sm p-1.5 flex flex-wrap gap-2 border border-slate-200">
             <button onclick="showTab('dashboard')" id="tab-dashboard"
-                class="tab-button flex-grow md:flex-1 py-3 px-2 rounded-md text-sm font-bold text-center bg-blue-600 text-white transition">📊
+                class="tab-button flex-grow md:flex-1 py-3 px-4 rounded-xl text-sm font-bold text-center bg-blue-600 text-white transition-all shadow-md">📊
                 Dashboard</button>
             <button onclick="showTab('peminjaman')" id="tab-peminjaman"
                 class="tab-button flex-grow md:flex-1 py-3 px-2 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition">📅
@@ -91,23 +115,34 @@
                 Laporan Kerusakan</button>
         </div>
 
-        <div id="content-dashboard" class="tab-content active">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <div class="bg-white p-6 rounded-lg shadow border-l-4 border-indigo-500">
-                    <div class="text-indigo-600 text-xs font-bold uppercase">Jadwal Kuliah (Admin)</div>
-                    <div class="text-3xl font-bold text-gray-800 mt-2" id="stat-admin">-</div>
+        <div id="content-dashboard" class="tab-content active animate-fade-in-up">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+                    <div class="absolute right-0 top-0 h-full w-1 bg-indigo-500"></div>
+                    <div class="text-indigo-600 text-xs font-bold uppercase tracking-wider mb-1">Jadwal Kuliah (Admin)
+                    </div>
+                    <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-admin">-</div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
-                    <div class="text-green-600 text-xs font-bold uppercase">Peminjaman User (ACC)</div>
-                    <div class="text-3xl font-bold text-gray-800 mt-2" id="stat-user">-</div>
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+                    <div class="absolute right-0 top-0 h-full w-1 bg-green-500"></div>
+                    <div class="text-green-600 text-xs font-bold uppercase tracking-wider mb-1">Peminjaman User (ACC)
+                    </div>
+                    <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-user">-</div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow border-l-4 border-yellow-500">
-                    <div class="text-yellow-600 text-xs font-bold uppercase">Menunggu Persetujuan</div>
-                    <div class="text-3xl font-bold text-gray-800 mt-2" id="stat-pending">-</div>
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+                    <div class="absolute right-0 top-0 h-full w-1 bg-yellow-400"></div>
+                    <div class="text-yellow-600 text-xs font-bold uppercase tracking-wider mb-1">Menunggu Persetujuan
+                    </div>
+                    <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-pending">-</div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
-                    <div class="text-red-600 text-xs font-bold uppercase">Laporan Kerusakan</div>
-                    <div class="text-3xl font-bold text-gray-800 mt-2" id="stat-damage">-</div>
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+                    <div class="absolute right-0 top-0 h-full w-1 bg-red-500"></div>
+                    <div class="text-red-600 text-xs font-bold uppercase tracking-wider mb-1">Laporan Kerusakan</div>
+                    <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-damage">-</div>
                 </div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -270,10 +305,18 @@
         <div id="content-peralatan" class="tab-content">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="md:col-span-1 bg-white p-6 rounded-lg shadow h-fit border border-gray-200">
-                    <h3 class="text-lg font-bold mb-4 text-gray-800 border-b pb-3">Tambah Alat</h3>
+                    <h3 class="text-lg font-bold mb-4 text-gray-800 border-b pb-3">Tambah Alat / Bahan</h3>
                     <form id="form-tambah-peralatan" class="space-y-3">
-                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama Alat</label><input
-                                type="text" id="nama_alat" class="w-full p-2 border rounded bg-gray-50" required></div>
+                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama
+                                Barang</label><input type="text" id="nama_alat"
+                                class="w-full p-2 border rounded bg-gray-50" placeholder="Contoh: Mikroskop / Alkohol"
+                                required></div>
+                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Jenis
+                                Barang</label><select id="jenis_alat"
+                                class="w-full p-2 border rounded bg-gray-50 font-semibold text-gray-700">
+                                <option value="alat">🛠️ Alat (Aset)</option>
+                                <option value="bahan">💧 Bahan (Habis Pakai)</option>
+                            </select></div>
                         <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Kategori</label><input
                                 type="text" id="kategori" class="w-full p-2 border rounded bg-gray-50" required></div>
                         <div class="grid grid-cols-2 gap-2">
@@ -287,21 +330,22 @@
                                     <option value="rusak">Rusak</option>
                                     <option value="maintenance">Maintenance</option>
                                 </select></div>
-                        </div><button type="submit"
+                        </div>
+                        <button type="submit"
                             class="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 font-medium shadow">Simpan
-                            Alat</button>
+                            Data</button>
                     </form>
                 </div>
                 <div class="md:col-span-2 bg-white rounded-lg shadow overflow-hidden border border-gray-200">
                     <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="font-bold text-gray-700">📦 Monitoring Stok Alat</h3><button
-                            onclick="loadPeralatan()" class="text-blue-600 text-sm hover:underline">🔄 Refresh
-                            Stok</button>
+                        <h3 class="font-bold text-gray-700">📦 Monitoring Stok</h3><button onclick="loadPeralatan()"
+                            class="text-blue-600 text-sm hover:underline">🔄 Refresh Stok</button>
                     </div>
                     <table class="min-w-full">
                         <thead class="bg-gray-100 text-gray-600 text-xs uppercase">
                             <tr>
-                                <th class="py-3 px-6 text-left font-bold">Nama Alat</th>
+                                <th class="py-3 px-6 text-left font-bold">Nama Barang</th>
+                                <th class="py-3 px-6 text-center font-bold">Jenis</th>
                                 <th class="py-3 px-6 text-center font-bold">Total</th>
                                 <th class="py-3 px-6 text-center font-bold">Dipinjam</th>
                                 <th class="py-3 px-6 text-center font-bold">Sisa</th>
@@ -356,8 +400,8 @@
         <div class="absolute w-full h-full bg-gray-900 opacity-50" onclick="toggleModal()"></div>
         <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-[80vh] p-6">
             <div class="flex justify-between mb-4 border-b pb-2">
-                <h3 class="text-lg font-bold text-gray-800" id="modalRoomName">Jadwal</h3>
-                <button onclick="toggleModal()" class="text-gray-500 hover:text-red-500 font-bold">✕</button>
+                <h3 class="text-lg font-bold text-gray-800" id="modalRoomName">Jadwal</h3><button
+                    onclick="toggleModal()" class="text-gray-500 hover:text-red-500 font-bold">✕</button>
             </div>
             <ul id="modalScheduleList" class="space-y-2 text-sm"></ul>
             <p id="modalEmpty" class="text-center text-gray-400 text-sm hidden">Tidak ada jadwal aktif.</p>
@@ -384,14 +428,21 @@
             </form>
         </div>
     </div>
+
     <div id="editToolModal" class="hidden fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
         <div class="absolute w-full h-full bg-gray-900 opacity-50" onclick="closeEditToolModal()"></div>
         <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto p-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Edit Stok & Info Alat</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Edit Data Barang</h3>
             <form id="form-edit-alat"><input type="hidden" id="edit_alat_id">
                 <div class="mb-3"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama
-                        Alat</label><input type="text" id="edit_nama_alat" class="w-full p-2 border rounded bg-gray-50"
-                        required></div>
+                        Barang</label><input type="text" id="edit_nama_alat"
+                        class="w-full p-2 border rounded bg-gray-50" required></div>
+                <div class="mb-3"><label
+                        class="block text-xs font-bold text-gray-500 uppercase mb-1">Jenis</label><select
+                        id="edit_jenis" class="w-full p-2 border rounded bg-gray-50">
+                        <option value="alat">🛠️ Alat</option>
+                        <option value="bahan">💧 Bahan</option>
+                    </select></div>
                 <div class="mb-3"><label
                         class="block text-xs font-bold text-gray-500 uppercase mb-1">Kategori</label><input type="text"
                         id="edit_kategori" class="w-full p-2 border rounded bg-gray-50" required></div>
@@ -422,9 +473,9 @@
 
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(b => { b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('text-gray-600', 'hover:bg-gray-100'); });
+            document.querySelectorAll('.tab-button').forEach(b => { b.classList.remove('bg-blue-600', 'text-white', 'shadow-md'); b.classList.add('text-gray-600', 'hover:bg-gray-100'); });
             document.getElementById(`content-${tabName}`).classList.add('active');
-            document.getElementById(`tab-${tabName}`).classList.add('bg-blue-600', 'text-white');
+            document.getElementById(`tab-${tabName}`).classList.add('bg-blue-600', 'text-white', 'shadow-md');
             document.getElementById(`tab-${tabName}`).classList.remove('text-gray-600', 'hover:bg-gray-100');
             if (tabName === 'dashboard') loadAnalytics();
         }
@@ -468,6 +519,7 @@
         function toggleRepeatInput() { const isChecked = document.getElementById('is_repeat').checked; document.getElementById('repeat_input_container').className = isChecked ? 'mt-2' : 'hidden mt-2'; }
         async function loadRuangOptions() { const res = await fetch(`${API_URL}/rooms`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); const s = document.getElementById('jadwal_ruang_id'); s.innerHTML = '<option value="">-- Pilih Ruangan --</option>'; data.forEach(r => { if (r.status !== 'maintenance') s.innerHTML += `<option value="${r.id}">${r.nama_ruang}</option>` }); }
 
+        // --- 1. LOAD ALL BOOKINGS (MAIN TABLE) ---
         async function loadAllBookings() {
             const res = await fetch(`${API_URL}/booking`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json();
             const pendingBody = document.getElementById('pendingTableBody'); const approvedBody = document.getElementById('approvedTableBody');
@@ -511,17 +563,28 @@
         function openEditRoomModal(id, nama, kap, lok) { document.getElementById('edit_room_id').value = id; document.getElementById('edit_nama_ruang').value = nama; document.getElementById('edit_kapasitas').value = kap; document.getElementById('edit_lokasi').value = lok; document.getElementById('editRoomModal').classList.remove('hidden'); }
         function closeEditRoomModal() { document.getElementById('editRoomModal').classList.add('hidden'); }
         document.getElementById('form-edit-ruangan').addEventListener('submit', async (e) => { e.preventDefault(); const id = document.getElementById('edit_room_id').value; const payload = { nama_ruang: document.getElementById('edit_nama_ruang').value, kapasitas: document.getElementById('edit_kapasitas').value, lokasi: document.getElementById('edit_lokasi').value }; try { const res = await fetch(`${API_URL}/rooms/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) }); if (res.ok) { alert('Berhasil diupdate!'); closeEditRoomModal(); loadRuangan(); } else { alert('Gagal update.'); } } catch (e) { alert('Error: ' + e.message); } });
+
         let activeLoans = [];
-        async function loadPeralatan() { try { const resAlat = await fetch(`${API_URL}/equipment`, { headers: { 'Authorization': `Bearer ${token}` } }); const dataAlat = await resAlat.json(); const resLoans = await fetch(`${API_URL}/booking/active-tools`, { headers: { 'Authorization': `Bearer ${token}` } }); activeLoans = await resLoans.json(); const tbody = document.getElementById('table-peralatan-body'); tbody.innerHTML = ''; dataAlat.forEach(item => { const loansForItem = activeLoans.filter(loan => loan.alat_id === item.id); const totalBorrowed = loansForItem.reduce((sum, loan) => sum + loan.jumlah_pinjam, 0); const sisa = item.jumlah_total - totalBorrowed; const sisaColor = sisa === 0 ? 'text-red-600 font-bold' : (sisa < 5 ? 'text-orange-500 font-bold' : 'text-green-600'); const btnPeminjam = totalBorrowed > 0 ? `<button onclick="showBorrowers('${item.id}', '${item.nama_alat}')" class="text-blue-600 hover:underline font-bold">${totalBorrowed}</button>` : `<span class="text-gray-400">0</span>`; const btnEdit = `<button onclick="openEditToolModal('${item.id}', '${item.nama_alat}', '${item.kategori}', '${item.jumlah_total}', '${item.kondisi}')" class="text-blue-600 hover:text-blue-800 font-bold text-xs border border-blue-200 px-2 py-1 rounded mr-2">Edit</button>`; tbody.innerHTML += `<tr class="hover:bg-gray-50 border-b"><td class="py-3 px-6"><div class="font-bold text-gray-800">${item.nama_alat}</div><div class="text-xs text-gray-500">${item.kategori}</div></td><td class="py-3 px-6 text-center">${item.jumlah_total}</td><td class="py-3 px-6 text-center text-lg">${btnPeminjam}</td><td class="py-3 px-6 text-center ${sisaColor}">${sisa}</td><td class="py-3 px-6 text-center flex justify-center items-center pt-4">${btnEdit}<button onclick="deleteItem('equipment', '${item.id}', 'Hapus alat?', loadPeralatan)" class="text-red-500 hover:text-red-700 text-lg" title="Hapus">&times;</button></td></tr>`; }); } catch (e) { console.error(e); } }
+        async function loadPeralatan() {
+            try {
+                const resAlat = await fetch(`${API_URL}/equipment`, { headers: { 'Authorization': `Bearer ${token}` } }); const dataAlat = await resAlat.json(); const resLoans = await fetch(`${API_URL}/booking/active-tools`, { headers: { 'Authorization': `Bearer ${token}` } }); activeLoans = await resLoans.json(); const tbody = document.getElementById('table-peralatan-body'); tbody.innerHTML = ''; dataAlat.forEach(item => {
+                    const loansForItem = activeLoans.filter(loan => loan.alat_id === item.id); const totalBorrowed = loansForItem.reduce((sum, loan) => sum + loan.jumlah_pinjam, 0); const sisa = item.jumlah_total - totalBorrowed; const sisaColor = sisa === 0 ? 'text-red-600 font-bold' : (sisa < 5 ? 'text-orange-500 font-bold' : 'text-green-600'); const btnPeminjam = totalBorrowed > 0 ? `<button onclick="showBorrowers('${item.id}', '${item.nama_alat}')" class="text-blue-600 hover:underline font-bold">${totalBorrowed}</button>` : `<span class="text-gray-400">0</span>`;
+                    const jenisBadge = item.jenis === 'bahan' ? '<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs border border-purple-200">💧 Bahan</span>' : '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs border border-blue-200">🛠️ Alat</span>';
+                    const btnEdit = `<button onclick="openEditToolModal('${item.id}', '${item.nama_alat}', '${item.kategori}', '${item.jumlah_total}', '${item.kondisi}', '${item.jenis}')" class="text-blue-600 hover:text-blue-800 font-bold text-xs border border-blue-200 px-2 py-1 rounded mr-2">Edit</button>`; tbody.innerHTML += `<tr class="hover:bg-gray-50 border-b"><td class="py-3 px-6"><div class="font-bold text-gray-800">${item.nama_alat}</div><div class="text-xs text-gray-500">${item.kategori}</div></td><td class="py-3 px-6 text-center">${jenisBadge}</td><td class="py-3 px-6 text-center">${item.jumlah_total}</td><td class="py-3 px-6 text-center text-lg">${btnPeminjam}</td><td class="py-3 px-6 text-center ${sisaColor}">${sisa}</td><td class="py-3 px-6 text-center flex justify-center items-center pt-4">${btnEdit}<button onclick="deleteItem('equipment', '${item.id}', 'Hapus alat?', loadPeralatan)" class="text-red-500 hover:text-red-700 text-lg" title="Hapus">&times;</button></td></tr>`;
+                });
+            } catch (e) { console.error(e); }
+        }
+        async function handleTambahPeralatan(e) { e.preventDefault(); await fetch(`${API_URL}/equipment`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ nama_alat: document.getElementById('nama_alat').value, jenis: document.getElementById('jenis_alat').value, kategori: document.getElementById('kategori').value, jumlah_total: document.getElementById('jumlah_total').value, kondisi: document.getElementById('kondisi').value }) }); e.target.reset(); loadPeralatan(); }
+        function openEditToolModal(id, nama, kat, tot, kond, jenis) { document.getElementById('edit_alat_id').value = id; document.getElementById('edit_nama_alat').value = nama; document.getElementById('edit_kategori').value = kat; document.getElementById('edit_jumlah_total').value = tot; document.getElementById('edit_kondisi').value = kond; document.getElementById('edit_jenis').value = jenis || 'alat'; document.getElementById('editToolModal').classList.remove('hidden'); }
+        function closeEditToolModal() { document.getElementById('editToolModal').classList.add('hidden'); }
+        document.getElementById('form-edit-alat').addEventListener('submit', async (e) => { e.preventDefault(); const id = document.getElementById('edit_alat_id').value; const payload = { nama_alat: document.getElementById('edit_nama_alat').value, jenis: document.getElementById('edit_jenis').value, kategori: document.getElementById('edit_kategori').value, jumlah_total: document.getElementById('edit_jumlah_total').value, kondisi: document.getElementById('edit_kondisi').value }; try { const res = await fetch(`${API_URL}/equipment/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) }); if (res.ok) { alert('Data alat berhasil diupdate!'); closeEditToolModal(); loadPeralatan(); } else { alert('Gagal update.'); } } catch (e) { alert('Error: ' + e.message); } });
+
         function showBorrowers(alatId, alatName) { document.getElementById('modalToolName').innerText = `Peminjam: ${alatName}`; const list = document.getElementById('borrowerList'); list.innerHTML = ''; const loans = activeLoans.filter(loan => loan.alat_id === alatId); loans.forEach(l => { list.innerHTML += `<div class="bg-gray-50 p-3 rounded border border-gray-200 flex justify-between items-center mb-2"><div><div class="font-bold text-gray-800">${l.peminjaman.users?.nama || 'Unknown'}</div><div class="text-xs text-gray-500">📅 ${new Date(l.peminjaman.waktu_mulai).toLocaleDateString()}</div></div><div class="font-bold text-xl text-blue-800 bg-blue-100 px-3 py-1 rounded">${l.jumlah_pinjam}</div></div>`; }); document.getElementById('borrowerModal').classList.remove('hidden'); }
         function closeBorrowerModal() { document.getElementById('borrowerModal').classList.add('hidden'); }
-        async function handleTambahPeralatan(e) { e.preventDefault(); await fetch(`${API_URL}/equipment`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ nama_alat: document.getElementById('nama_alat').value, kategori: document.getElementById('kategori').value, jumlah_total: document.getElementById('jumlah_total').value, kondisi: document.getElementById('kondisi').value }) }); e.target.reset(); loadPeralatan(); }
-        function openEditToolModal(id, nama, kat, tot, kond) { document.getElementById('edit_alat_id').value = id; document.getElementById('edit_nama_alat').value = nama; document.getElementById('edit_kategori').value = kat; document.getElementById('edit_jumlah_total').value = tot; document.getElementById('edit_kondisi').value = kond; document.getElementById('editToolModal').classList.remove('hidden'); }
-        function closeEditToolModal() { document.getElementById('editToolModal').classList.add('hidden'); }
-        document.getElementById('form-edit-alat').addEventListener('submit', async (e) => { e.preventDefault(); const id = document.getElementById('edit_alat_id').value; const payload = { nama_alat: document.getElementById('edit_nama_alat').value, kategori: document.getElementById('edit_kategori').value, jumlah_total: document.getElementById('edit_jumlah_total').value, kondisi: document.getElementById('edit_kondisi').value }; try { const res = await fetch(`${API_URL}/equipment/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) }); if (res.ok) { alert('Data alat berhasil diupdate!'); closeEditToolModal(); loadPeralatan(); } else { alert('Gagal update.'); } } catch (e) { alert('Error: ' + e.message); } });
         async function loadReports() { const res = await fetch(`${API_URL}/reports/all`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); const b = document.getElementById('table-reports-body'); b.innerHTML = ''; if (data.length === 0) b.innerHTML = '<tr><td colspan="5" class="text-center py-4">Tidak ada laporan.</td></tr>'; else data.forEach(i => { b.innerHTML += `<tr class="hover:bg-gray-50 border-b"><td class="py-3 px-6 text-xs">${new Date(i.tanggal_lapor).toLocaleDateString()}</td><td class="py-3 px-6 font-bold">${i.users?.nama || 'User'}</td><td class="py-3 px-6 text-blue-600">${i.peralatan?.nama_alat || '-'}</td><td class="py-3 px-6 text-xs truncate max-w-xs" title="${i.deskripsi_kerusakan}">${i.deskripsi_kerusakan}</td><td class="py-3 px-6 text-center"><select onchange="updateReportStatus('${i.id}',this.value)" class="border rounded text-xs"><option value="baru" ${i.status_laporan === 'baru' ? 'selected' : ''}>Baru</option><option value="diproses" ${i.status_laporan === 'diproses' ? 'selected' : ''}>Diproses</option><option value="selesai" ${i.status_laporan === 'selesai' ? 'selected' : ''}>Selesai</option></select></td></tr>` }); }
         async function updateReportStatus(id, s) { if (confirm('Update status?')) await fetch(`${API_URL}/reports/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status_laporan: s }) }); loadReports(); }
 
+        // --- 2. TOGGLE DETAIL HELPER (NEW ACCORDION) ---
         function toggleDetail(id) {
             const el = document.getElementById(id);
             const icon = document.getElementById('chevron-' + id.split('-')[1]);
@@ -536,7 +599,7 @@
 
         function toggleModal() { document.getElementById('scheduleModal').classList.toggle('hidden'); }
 
-        // --- 3. SHOW ROOM SCHEDULE (FIXED ROLE & DISPLAY) ---
+        // --- 3. SHOW ROOM SCHEDULE (FIXED: GROUPING, ROLE, & ACCORDION) ---
         async function showRoomSchedule(roomId, roomName) {
             document.getElementById('modalRoomName').innerText = `Jadwal: ${roomName}`;
             const list = document.getElementById('modalScheduleList');
@@ -573,22 +636,22 @@
                         // --- ROLE MAPPING (EXACT MATCH) ---
                         const rawRole = s.users?.role ? s.users.role.toLowerCase() : '';
                         let displayRole = 'Mahasiswa';
-                        let badgeColor = 'bg-green-100 text-green-800 border border-green-200';
+                        let badgeColor = 'bg-green-100 text-green-800 border-green-200';
 
                         if (rawRole === 'admin') {
                             displayRole = 'Admin';
-                            badgeColor = 'bg-indigo-100 text-indigo-800 border border-indigo-200';
+                            badgeColor = 'bg-indigo-100 text-indigo-800 border-indigo-200';
                         } else if (rawRole === 'dosen') {
                             displayRole = 'Dosen';
-                            badgeColor = 'bg-blue-100 text-blue-800 border border-blue-200';
+                            badgeColor = 'bg-blue-100 text-blue-800 border-blue-200';
                         } else if (rawRole === 'asisten') {
                             displayRole = 'Asisten';
-                            badgeColor = 'bg-purple-100 text-purple-800 border border-purple-200';
+                            badgeColor = 'bg-purple-100 text-purple-800 border-purple-200';
                         }
 
                         if (dateHeader !== lastDate) {
                             list.innerHTML += `
-                                <li class="sticky-date bg-gray-100 px-3 py-2 font-bold text-gray-700 text-sm rounded-md mb-2 shadow-sm border border-gray-200 z-10">
+                                <li class="sticky-date bg-slate-100 px-3 py-2 font-bold text-gray-700 text-sm rounded-md mb-2 shadow-sm border border-slate-200 z-10 mt-3">
                                     📅 ${dateHeader}
                                 </li>`;
                             lastDate = dateHeader;
@@ -603,13 +666,13 @@
                         }
 
                         list.innerHTML += `
-                            <li onclick="toggleDetail('${detailId}')" class="bg-white border-l-4 ${rawRole === 'admin' ? 'border-indigo-500' : 'border-green-500'} pl-3 pr-3 py-3 mb-3 rounded shadow-sm cursor-pointer hover:bg-blue-50 transition relative">
+                            <li onclick="toggleDetail('${detailId}')" class="bg-white border-l-4 ${rawRole === 'admin' ? 'border-indigo-500' : 'border-green-500'} pl-3 pr-3 py-3 mb-3 rounded shadow-sm cursor-pointer hover:bg-slate-50 transition relative">
                                 <div class="flex justify-between items-center">
                                     <div class="w-full">
-                                        <div class="flex justify-between w-full mb-1">
+                                        <div class="flex justify-between w-full mb-1 items-center">
                                             <span class="font-bold text-gray-800 text-sm">${startTime} - ${endTime}</span>
-                                            <span class="text-xs font-bold ${badgeColor} px-2 py-0.5 rounded-full">
-                                                ${user.split(' ')[0]}..
+                                            <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${badgeColor}">
+                                                ${user.split(' ')[0].substring(0, 8)}..
                                             </span>
                                         </div>
                                         <div class="text-xs text-gray-500 truncate w-11/12">${purpose}</div>
@@ -619,7 +682,7 @@
                                     </div>
                                 </div>
                                 
-                                <div id="${detailId}" class="hidden mt-3 pt-2 text-sm bg-gray-50 -mx-3 -mb-3 px-3 py-2 rounded-b border-t border-gray-100">
+                                <div id="${detailId}" class="hidden mt-3 pt-2 text-sm bg-slate-50 -mx-3 -mb-3 px-3 py-2 rounded-b border-t border-slate-100">
                                     <p class="text-gray-700 text-xs mb-1">
                                         <span class="font-bold">Peminjam:</span> ${user} <span class="text-gray-500 italic">(${displayRole})</span>
                                     </p>
@@ -635,9 +698,23 @@
             }
         }
 
-        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+        function logout() {
+            Swal.fire({
+                title: 'Keluar?',
+                text: "Anda yakin ingin keluar?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Keluar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.clear();
+                    window.location.href = 'index.html';
+                }
+            })
+        }
 
-        // INIT
         document.addEventListener('DOMContentLoaded', () => {
             showTab('dashboard');
             loadAnalytics(); loadAllBookings(); loadRuangan(); loadPeralatan(); loadReports(); loadRuangOptions();

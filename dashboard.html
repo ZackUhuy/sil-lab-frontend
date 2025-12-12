@@ -7,6 +7,41 @@
     <title>Dashboard User - SISIL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Plus Jakarta Sans (More modern than Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- SweetAlert2 for Premium Alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        glass: 'rgba(255, 255, 255, 0.7)',
+                        glassBorder: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
         /* Gaya Tab & Modal */
@@ -86,117 +121,216 @@
             transform: rotate(180deg);
         }
 
-        .transition-transform {
-            transition: transform 0.3s ease;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        .glass-button {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .tab-active-glow {
+            background: white;
+            color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+
+        body {
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 0) 0, hsla(253, 16%, 7%, 0) 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0.05) 0, hsla(225, 39%, 30%, 0) 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 0.05) 0, hsla(339, 49%, 30%, 0) 50%);
         }
     </style>
 </head>
 
-<body class="bg-gray-50 font-sans min-h-screen flex flex-col relative">
+<body
+    class="bg-slate-50 font-sans min-h-screen flex flex-col relative text-slate-800 selection:bg-blue-200 selection:text-blue-900">
 
-    <nav class="bg-blue-600 p-4 text-white flex justify-between items-center shadow-md sticky top-0 z-40">
-        <div class="flex flex-col">
-            <h1 class="text-2xl font-bold tracking-wide flex items-center gap-2">
-                <i class="fas fa-flask"></i> SISIL
-            </h1>
-            <span class="text-xs text-blue-100 hidden md:block">SciTech Information System for Inventory and
-                Laboratory</span>
-        </div>
-        <div class="flex items-center gap-4">
-            <div class="text-right hidden sm:block">
-                <span id="userName" class="block font-medium text-sm">User</span>
-                <span class="block text-xs text-blue-200">Mahasiswa/Dosen</span>
+    <!-- Floating Navbar -->
+    <div class="sticky top-4 z-50 px-4">
+        <nav
+            class="max-w-7xl mx-auto glass-panel rounded-full px-6 py-3 flex justify-between items-center transition-all duration-300">
+            <div class="flex items-center gap-3">
+                <div
+                    class="bg-gradient-to-br from-blue-600 to-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-flask text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-slate-800 leading-none">SISIL</h1>
+                    <span class="text-[10px] text-slate-500 font-medium tracking-wide uppercase">Inventory & Lab
+                        System</span>
+                </div>
             </div>
-            <button onclick="logout()"
-                class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm font-bold transition shadow-sm">
-                <i class="fas fa-sign-out-alt"></i> Keluar
-            </button>
+
+            <div class="flex items-center gap-6">
+                <div class="text-right hidden sm:block">
+                    <span id="userName" class="block font-bold text-sm text-slate-700">User</span>
+                    <span
+                        class="block text-[10px] uppercase tracking-wider text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-full mt-0.5">Mahasiswa</span>
+                </div>
+                <div class="h-8 w-[1px] bg-slate-200 hidden sm:block"></div>
+                <button onclick="logout()"
+                    class="group flex items-center gap-2 text-slate-500 hover:text-red-600 transition-colors font-semibold text-sm">
+                    <span class="hidden sm:inline group-hover:underline decoration-2 underline-offset-4">Log Out</span>
+                    <i
+                        class="fas fa-sign-out-alt bg-slate-100 p-2 rounded-full group-hover:bg-red-50 transition-colors"></i>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container mx-auto p-4 md:p-6 max-w-7xl flex-grow mb-24 anim-fade-in-up">
+
+        <!-- Welcome Hero Section -->
+        <div
+            class="mt-4 mb-10 relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-2xl shadow-indigo-500/20 p-8 md:p-12">
+            <div class="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">Selamat Datang 👋</h2>
+                    <p class="text-blue-100 text-lg opacity-90 max-w-xl leading-relaxed">Kelola peminjaman ruangan dan
+                        alat laboratorium dengan mudah, cepat, dan transparan.</p>
+                    <div class="flex gap-3 mt-6">
+                        <button onclick="document.getElementById('tab-booking').click()"
+                            class="bg-white text-blue-600 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-50 transition shadow-lg shadow-black/5">Pinjam
+                            Sekarang</button>
+                        <button onclick="toggleChat()"
+                            class="bg-blue-700/50 text-white border border-white/20 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-700/70 transition backdrop-blur-md">Tanya
+                            AI</button>
+                    </div>
+                </div>
+                <div class="hidden md:block opacity-90">
+                    <i
+                        class="fas fa-calendar-check text-9xl text-white/10 absolute right-10 bottom-[-20px] animate-float"></i>
+                </div>
+            </div>
         </div>
-    </nav>
 
-    <div class="container mx-auto p-6 max-w-7xl flex-grow mb-24">
-
-        <div class="mb-6 bg-white rounded-lg shadow-sm p-1 flex space-x-1 overflow-x-auto">
+        <!-- Custom Tab Navigation -->
+        <div
+            class="mb-8 p-1.5 bg-slate-200/50 backdrop-blur-md rounded-2xl flex flex-wrap md:flex-nowrap gap-2 mx-auto max-w-4xl shadow-inner">
             <button onclick="showTab('booking')" id="tab-booking"
-                class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center bg-blue-600 text-white shadow transition whitespace-nowrap">
-                <i class="fas fa-building mr-2"></i> Pinjam Ruangan
+                class="tab-button w-full md:w-auto flex-1 py-3 px-6 rounded-xl text-sm font-bold text-center transition-all duration-300 flex items-center justify-center gap-2 text-slate-500 hover:text-slate-700">
+                <i class="fas fa-building"></i> <span>Pinjam Ruangan</span>
             </button>
             <button onclick="showTab('alat_only')" id="tab-alat_only"
-                class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
-                <i class="fas fa-box-open mr-2"></i> Pinjam Alat Saja
+                class="tab-button w-full md:w-auto flex-1 py-3 px-6 rounded-xl text-sm font-bold text-center transition-all duration-300 flex items-center justify-center gap-2 text-slate-500 hover:text-slate-700">
+                <i class="fas fa-box-open"></i> <span>Pinjam Alat</span>
             </button>
             <button onclick="showTab('ruangan')" id="tab-ruangan"
-                class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
-                <i class="far fa-calendar-alt mr-2"></i> Info Jadwal
+                class="tab-button w-full md:w-auto flex-1 py-3 px-6 rounded-xl text-sm font-bold text-center transition-all duration-300 flex items-center justify-center gap-2 text-slate-500 hover:text-slate-700">
+                <i class="far fa-calendar-alt"></i> <span>Info Jadwal</span>
             </button>
             <button onclick="showTab('laporan')" id="tab-laporan"
-                class="tab-button flex-1 py-3 px-4 rounded-md text-sm font-bold text-center text-gray-600 hover:bg-gray-100 transition whitespace-nowrap">
-                <i class="fas fa-exclamation-triangle mr-2"></i> Lapor Kerusakan
+                class="tab-button w-full md:w-auto flex-1 py-3 px-6 rounded-xl text-sm font-bold text-center transition-all duration-300 flex items-center justify-center gap-2 text-slate-500 hover:text-slate-700">
+                <i class="fas fa-exclamation-triangle"></i> <span>Laporan</span>
             </button>
         </div>
 
-        <div id="content-booking" class="tab-content active">
+        <div id="content-booking" class="tab-content active animate-fade-in-up">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-blue-100">
-                    <h2 class="text-xl font-bold mb-6 text-blue-800 flex items-center gap-2">
-                        <i class="fas fa-edit"></i> Form Pinjam Ruangan
+                <div class="glass-panel p-6 rounded-3xl lg:col-span-1 h-fit">
+                    <h2 class="text-xl font-bold mb-6 text-slate-800 flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 text-lg shadow-inner">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        Form Pinjam
                     </h2>
                     <form id="bookingForm" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Ruangan</label>
-                            <select id="ruangId"
-                                class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"
-                                required>
-                                <option value="" disabled selected>-- Memuat Ruangan --</option>
-                            </select>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Pilih Ruangan</label>
+                            <div class="relative">
+                                <i class="fas fa-door-open absolute left-4 top-3.5 text-gray-400"></i>
+                                <select id="ruangId"
+                                    class="w-full pl-10 p-3 border-transparent bg-slate-50 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-700"
+                                    required>
+                                    <option value="" disabled selected>-- Memuat Ruangan --</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label>
+                                <label class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Mulai</label>
                                 <input type="datetime-local" id="waktuMulai"
-                                    class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    class="w-full p-3 border-transparent bg-slate-50 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none focus:bg-white transition-all"
                                     required>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label>
+                                <label class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Selesai</label>
                                 <input type="datetime-local" id="waktuSelesai"
-                                    class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    class="w-full p-3 border-transparent bg-slate-50 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none focus:bg-white transition-all"
                                     required>
                             </div>
                         </div>
 
-                        <div class="border border-gray-200 bg-gray-50 p-3 rounded-lg">
-                            <h3 class="font-bold text-xs text-gray-500 uppercase mb-2">Alat Tambahan (Opsional)</h3>
-                            <div id="listAlatRoom" class="space-y-1 mb-2"></div>
+                        <div class="border border-dashed border-gray-300 bg-slate-50/50 p-4 rounded-2xl">
+                            <h3 class="font-bold text-xs text-slate-400 uppercase tracking-widest mb-3">Alat Tambahan
+                                (Opsional)</h3>
+                            <div id="listAlatRoom" class="space-y-2 mb-3"></div>
                             <div class="flex space-x-2">
                                 <select id="selectAlatRoom"
-                                    class="flex-grow p-2 border rounded-lg text-sm bg-white outline-none">
+                                    class="flex-grow p-2.5 border-transparent rounded-xl text-sm bg-white shadow-sm outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="" disabled selected>Pilih Alat...</option>
                                 </select>
                                 <input type="number" id="qtyAlatRoom" min="1" value="1"
-                                    class="w-14 p-2 border rounded-lg text-sm outline-none">
+                                    class="w-16 p-2.5 border-transparent text-center rounded-xl text-sm outline-none bg-white shadow-sm focus:ring-2 focus:ring-blue-500">
                                 <button type="button" onclick="addToolToRoom()"
-                                    class="bg-gray-200 text-gray-700 px-3 rounded-lg text-sm hover:bg-gray-300 font-bold">+</button>
+                                    class="bg-blue-600 text-white w-10 rounded-xl text-lg hover:bg-blue-700 transition shadow-lg shadow-blue-200 font-medium pb-1">+</button>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Tujuan / Kegiatan</label>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Tujuan /
+                                Kegiatan</label>
                             <textarea id="tujuan"
-                                class="w-full p-3 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                rows="2" placeholder="Contoh: Diskusi Kelompok Fisika Dasar" required></textarea>
+                                class="w-full p-3 border-transparent bg-slate-50 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none focus:bg-white transition-all"
+                                rows="3" placeholder="Contoh: Diskusi Kelompok Fisika Dasar" required></textarea>
                         </div>
                         <button type="submit"
-                            class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition shadow">Ajukan
-                            Peminjaman</button>
+                            class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all transform active:scale-95">
+                            Ajukan Peminjaman
+                        </button>
                     </form>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
+                <div
+                    class="bg-white p-6 rounded-3xl shadow-xl shadow-slate-200/50 lg:col-span-2 border border-slate-100">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-history mr-2"></i> Riwayat
-                            Peminjaman Saya</h2>
-                        <button onclick="loadBookings()" class="text-sm text-blue-500 hover:text-blue-700 font-medium">
+                        <h2 class="text-xl font-bold text-slate-800"><i class="fas fa-history mr-2 text-blue-500"></i>
+                            Riwayat
+                            Peminjaman</h2>
+                        <button onclick="loadBookings()"
+                            class="text-sm bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-200 font-medium transition">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
                     </div>
@@ -219,65 +353,79 @@
 
         <div id="content-alat_only" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-green-100">
-                    <h2 class="text-xl font-bold mb-6 text-green-800 flex items-center gap-2">
-                        <i class="fas fa-tools"></i> Form Pinjam Alat
+                <div
+                    class="bg-white p-6 rounded-3xl shadow-xl shadow-green-900/5 lg:col-span-1 h-fit border border-gray-100">
+                    <h2 class="text-xl font-bold mb-6 text-slate-800 flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-lg">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        Form Pinjam Alat
                     </h2>
                     <form id="toolBookingForm" class="space-y-4">
-                        <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
-                            <h3 class="font-bold text-green-800 mb-2">Keranjang Alat</h3>
+                        <div class="bg-green-50/50 border border-green-100 p-4 rounded-2xl">
+                            <h3 class="font-bold text-xs text-green-700 uppercase tracking-wider mb-3">Keranjang 🛒</h3>
                             <div id="listAlatOnly" class="space-y-2 mb-4 min-h-[50px]">
-                                <p class="text-xs text-gray-400 italic text-center py-2">Belum ada alat dipilih</p>
+                                <p class="text-xs text-slate-400 italic text-center py-2">Belum ada alat dipilih</p>
                             </div>
                             <div class="flex flex-col space-y-2">
                                 <select id="selectAlatOnly"
-                                    class="w-full p-2 border rounded-lg text-sm bg-white outline-none">
+                                    class="w-full p-2.5 border-transparent rounded-xl text-sm bg-white shadow-sm outline-none focus:ring-2 focus:ring-green-500">
                                     <option value="" disabled selected>Pilih Alat...</option>
                                 </select>
                                 <div class="flex space-x-2">
                                     <input type="number" id="qtyAlatOnly" min="1" value="1"
-                                        class="w-20 p-2 border rounded-lg text-sm outline-none" placeholder="Jml">
+                                        class="w-20 p-2.5 border-transparent text-center rounded-xl text-sm outline-none bg-white shadow-sm focus:ring-2 focus:ring-green-500"
+                                        placeholder="Jml">
                                     <button type="button" onclick="addToolToOnly()"
-                                        class="flex-grow bg-green-600 text-white p-2 rounded-lg text-sm hover:bg-green-700 font-medium">Tambah</button>
+                                        class="flex-grow bg-green-600 text-white p-2.5 rounded-xl text-sm hover:bg-green-700 font-bold shadow-lg shadow-green-200 transition-all active:scale-95">Tambah</button>
                                 </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label><input
+                            <div><label class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Mulai</label><input
                                     type="datetime-local" id="waktuMulaiTool"
-                                    class="w-full p-2 border rounded-lg text-sm outline-none" required></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Selesai</label><input
+                                    class="w-full p-3 border-transparent bg-slate-50 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none focus:bg-white transition-all"
+                                    required></div>
+                            <div><label
+                                    class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Selesai</label><input
                                     type="datetime-local" id="waktuSelesaiTool"
-                                    class="w-full p-2 border rounded-lg text-sm outline-none" required></div>
+                                    class="w-full p-3 border-transparent bg-slate-50 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none focus:bg-white transition-all"
+                                    required></div>
                         </div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tujuan</label><textarea
-                                id="tujuanTool" class="w-full p-3 border rounded-lg text-sm outline-none" rows="2"
-                                required></textarea></div>
+                        <div><label class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Tujuan</label><textarea
+                                id="tujuanTool"
+                                class="w-full p-3 border-transparent bg-slate-50 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none focus:bg-white transition-all"
+                                rows="2" required></textarea></div>
                         <button type="submit"
-                            class="w-full bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition shadow">Ajukan
+                            class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-green-200 transition-all active:scale-95">Ajukan
                             Peminjaman</button>
                     </form>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border border-gray-100">
-                    <div class="flex justify-between items-center mb-4 border-b pb-2">
-                        <h3 class="font-bold text-gray-700 flex items-center gap-2"><i class="fas fa-boxes"></i> Info
+                <div
+                    class="bg-white p-6 rounded-3xl shadow-xl shadow-slate-200/50 lg:col-span-2 border border-slate-100">
+                    <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                        <h3 class="font-bold text-slate-700 flex items-center gap-2"><i
+                                class="fas fa-boxes text-green-500"></i> Info
                             Stok Alat Real-time</h3>
-                        <button onclick="loadEquipmentOptions()" class="text-blue-600 text-sm hover:underline">
+                        <button onclick="loadEquipmentOptions()"
+                            class="text-green-600 text-sm hover:bg-green-50 px-3 py-1 rounded-lg transition font-medium">
                             <i class="fas fa-sync-alt"></i> Refresh Stok
                         </button>
                     </div>
                     <div class="overflow-x-auto max-h-[500px]">
                         <table class="min-w-full">
-                            <thead class="bg-gray-100 text-gray-600 text-xs uppercase sticky top-0">
+                            <thead
+                                class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold sticky top-0 tracking-wider">
                                 <tr>
-                                    <th class="py-3 px-4 text-left">Nama Alat</th>
+                                    <th class="py-3 px-4 text-left rounded-l-lg">Nama Alat</th>
                                     <th class="py-3 px-4 text-left">Kategori</th>
                                     <th class="py-3 px-4 text-center">Total</th>
                                     <th class="py-3 px-4 text-center">Tersedia</th>
-                                    <th class="py-3 px-4 text-center">Kondisi</th>
+                                    <th class="py-3 px-4 text-center rounded-r-lg">Kondisi</th>
                                 </tr>
                             </thead>
-                            <tbody id="stockTableBody" class="text-gray-600 text-sm divide-y divide-gray-100"></tbody>
+                            <tbody id="stockTableBody" class="text-slate-600 text-sm divide-y divide-gray-50"></tbody>
                         </table>
                     </div>
                 </div>
@@ -299,26 +447,33 @@
 
         <div id="content-laporan" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 h-fit border border-red-100">
-                    <h2 class="text-xl font-bold mb-6 text-red-700 flex items-center gap-2">
-                        <i class="fas fa-exclamation-circle"></i> Lapor Kerusakan
+                <div
+                    class="bg-white p-6 rounded-3xl shadow-xl shadow-red-900/5 lg:col-span-1 h-fit border border-gray-100">
+                    <h2 class="text-xl font-bold mb-6 text-slate-800 flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-lg">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        Lapor Kerusakan
                     </h2>
                     <form id="reportForm" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Alat</label>
-                            <select id="laporAlatId" class="w-full p-2.5 border rounded-lg bg-gray-50 outline-none"
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Pilih Alat</label>
+                            <select id="laporAlatId"
+                                class="w-full p-3 border-transparent rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-red-500 outline-none transition-all"
                                 required>
                                 <option value="" disabled selected>Memuat...</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Masalah</label>
+                            <label class="block text-sm font-medium text-slate-600 mb-1.5 ml-1">Deskripsi
+                                Masalah</label>
                             <textarea id="deskripsiKerusakan"
-                                class="w-full p-3 border rounded-lg text-sm bg-gray-50 outline-none" rows="4"
-                                placeholder="Jelaskan kerusakan secara detail..." required></textarea>
+                                class="w-full p-3 border-transparent rounded-xl text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-red-500 outline-none transition-all"
+                                rows="4" placeholder="Jelaskan kerusakan secara detail..." required></textarea>
                         </div>
                         <button type="submit"
-                            class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition shadow">Kirim
+                            class="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-red-200 transition-all active:scale-95">Kirim
                             Laporan</button>
                     </form>
                 </div>
@@ -358,35 +513,47 @@
     </div>
 
     <button onclick="toggleChat()"
-        class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl transition transform hover:scale-110 z-50 flex items-center justify-center w-14 h-14">
-        <i class="fas fa-comment-dots text-2xl"></i>
+        class="fixed bottom-8 right-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:scale-110 text-white p-0 rounded-full shadow-2xl shadow-blue-500/40 transition-all transform z-50 flex items-center justify-center w-16 h-16 border-4 border-white">
+        <i class="fas fa-comment-dots text-3xl"></i>
     </button>
 
     <div id="chatWindow"
-        class="fixed bottom-24 right-6 w-80 md:w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 flex flex-col chat-hidden h-[500px]">
+        class="fixed bottom-28 right-8 w-80 md:w-96 bg-white rounded-3xl shadow-2xl shadow-slate-900/20 border border-gray-100 z-50 flex flex-col chat-hidden h-[500px] overflow-hidden">
         <div
-            class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 rounded-t-xl flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <h3 class="font-bold">Asisten SISIL 🤖</h3>
+            class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex justify-between items-center shadow-md">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div
+                        class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur text-sm">
+                        🤖</div>
+                    <div
+                        class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-blue-600">
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">Asisten SISIL</h3>
+                    <p class="text-[10px] text-blue-100 opacity-90">Online • Balas cepat</p>
+                </div>
             </div>
-            <button onclick="toggleChat()" class="text-white hover:text-gray-200 font-bold text-lg">&times;</button>
+            <button onclick="toggleChat()"
+                class="text-white/80 hover:text-white transition bg-white/10 w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/20">&times;</button>
         </div>
-        <div id="chatMessages" class="flex-grow p-4 overflow-y-auto space-y-3 bg-gray-50">
+        <div id="chatMessages" class="flex-grow p-4 overflow-y-auto space-y-3 bg-slate-50">
             <div class="flex justify-start">
                 <div
-                    class="bg-white border border-gray-200 p-3 rounded-br-lg rounded-tr-lg rounded-bl-lg text-sm text-gray-700 shadow-sm max-w-[85%]">
-                    Halo! Saya AI Cerdas. Tanya saya "Ruangan mana yang kosong besok?" atau "Apakah alat mikroskop
-                    tersedia?" 😊</div>
+                    class="bg-white border border-gray-100 p-3.5 rounded-2xl rounded-tl-none text-sm text-slate-700 shadow-sm max-w-[85%]">
+                    Halo! Saya AI Cerdas SISIL. 👋<br><br>Tanya saya "Ruangan mana yang kosong besok?" atau "Apakah alat
+                    mikroskop tersedia?" 😊</div>
             </div>
         </div>
-        <div class="p-3 border-t border-gray-200 bg-white rounded-b-xl">
-            <form id="chatForm" class="flex gap-2">
+        <div class="p-3 border-t border-gray-100 bg-white">
+            <form id="chatForm" class="flex gap-2 items-center">
                 <input type="text" id="chatInput"
-                    class="flex-grow p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
-                    placeholder="Tanya ketersediaan..." autocomplete="off">
-                <button type="submit" class="bg-blue-600 text-white p-2 px-3 rounded-lg hover:bg-blue-700 transition"><i
-                        class="fas fa-paper-plane"></i></button>
+                    class="flex-grow p-3 border-transparent bg-slate-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all pl-4"
+                    placeholder="Ketik pesan..." autocomplete="off">
+                <button type="submit"
+                    class="bg-indigo-600 text-white w-10 h-10 rounded-full hover:view-indigo-700 transition flex items-center justify-center shadow-lg shadow-indigo-200 hover:scale-105 active:scale-95"><i
+                        class="fas fa-paper-plane text-xs translation-x-0.5"></i></button>
             </form>
         </div>
     </div>
@@ -403,11 +570,23 @@
         let selectedToolsRoom = {}, selectedToolsOnly = {};
 
         function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(b => { b.classList.remove('bg-blue-600', 'text-white', 'shadow'); b.classList.add('text-gray-600', 'hover:bg-gray-100'); });
-            document.getElementById(`content-${tabName}`).classList.add('active');
-            document.getElementById(`tab-${tabName}`).classList.add('bg-blue-600', 'text-white', 'shadow');
-            document.getElementById(`tab-${tabName}`).classList.remove('text-gray-600', 'hover:bg-gray-100');
+            document.querySelectorAll('.tab-content').forEach(c => {
+                c.classList.remove('active', 'animate-fade-in-up');
+                c.style.display = 'none';
+            });
+            document.querySelectorAll('.tab-button').forEach(b => {
+                b.classList.remove('tab-active-glow');
+                b.classList.add('text-slate-500');
+            });
+
+            const content = document.getElementById(`content-${tabName}`);
+            content.style.display = 'block';
+            // Slight delay to re-trigger animation
+            setTimeout(() => content.classList.add('active', 'animate-fade-in-up'), 10);
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('text-slate-500');
+            activeBtn.classList.add('tab-active-glow');
 
             if (tabName === 'booking') { loadBookings(); loadRoomStatus(); }
             else if (tabName === 'alat_only') { loadEquipmentOptions(); loadBookings(); }
@@ -441,12 +620,46 @@
         function removeToolFromRoom(id) { delete selectedToolsRoom[id]; renderTools('listAlatRoom', selectedToolsRoom, 'removeToolFromRoom'); }
         function addToolToOnly() { const id = document.getElementById('selectAlatOnly').value; const qty = parseInt(document.getElementById('qtyAlatOnly').value); if (validateTool(id, qty)) { selectedToolsOnly[id] = { id, jumlah: qty }; renderTools('listAlatOnly', selectedToolsOnly, 'removeToolFromOnly'); } }
         function removeToolFromOnly(id) { delete selectedToolsOnly[id]; renderTools('listAlatOnly', selectedToolsOnly, 'removeToolFromOnly'); }
-        function validateTool(id, qty) { if (!id || isNaN(qty) || qty <= 0) { alert('Pilih alat & jumlah valid'); return false; } const item = globalEquipment.find(e => e.id === id); if (item.jumlah_tersedia < qty) { alert(`Stok tidak cukup (Sisa: ${item.jumlah_tersedia})`); return false; } return true; }
-        function renderTools(cId, dataObj, fnName) { const c = document.getElementById(cId); c.innerHTML = ''; if (Object.keys(dataObj).length === 0) { c.innerHTML = '<p class="text-xs text-gray-400 italic text-center">Belum ada alat</p>'; return; } for (const id in dataObj) { const item = globalEquipment.find(e => e.id === id); c.innerHTML += `<div class="flex justify-between bg-white p-2 border rounded text-sm items-center"><span>${item.nama_alat}</span><div class="flex items-center"><span class="font-bold text-blue-600 mr-2">${dataObj[id].jumlah}x</span><button type="button" onclick="${fnName}('${id}')" class="text-red-500 font-bold">&times;</button></div></div>`; } }
+        function validateTool(id, qty) { if (!id || isNaN(qty) || qty <= 0) { Swal.fire('Oops', 'Pilih alat & jumlah valid!', 'error'); return false; } const item = globalEquipment.find(e => e.id === id); if (item.jumlah_tersedia < qty) { Swal.fire('Stok Kurang', `Stok tidak cukup (Sisa: ${item.jumlah_tersedia})`, 'warning'); return false; } return true; }
+        function renderTools(cId, dataObj, fnName) { const c = document.getElementById(cId); c.innerHTML = ''; if (Object.keys(dataObj).length === 0) { c.innerHTML = '<p class="text-xs text-gray-400 italic text-center">Belum ada alat</p>'; return; } for (const id in dataObj) { const item = globalEquipment.find(e => e.id === id); c.innerHTML += `<div class="flex justify-between bg-white p-2 border rounded-xl text-sm items-center shadow-sm"><span>${item.nama_alat}</span><div class="flex items-center"><span class="font-bold text-blue-600 mr-2">${dataObj[id].jumlah}x</span><button type="button" onclick="${fnName}('${id}')" class="text-red-500 font-bold hover:bg-red-50 rounded p-1">&times;</button></div></div>`; } }
 
-        document.getElementById('bookingForm').addEventListener('submit', async (e) => { e.preventDefault(); await submitBooking({ ruang_id: document.getElementById('ruangId').value, waktu_mulai: document.getElementById('waktuMulai').value, waktu_selesai: document.getElementById('waktuSelesai').value, tujuan_peminjaman: document.getElementById('tujuan').value, alat_ids: Object.values(selectedToolsRoom) }, () => { e.target.reset(); selectedToolsRoom = {}; renderTools('listAlatRoom', {}, ''); }); });
-        document.getElementById('toolBookingForm').addEventListener('submit', async (e) => { e.preventDefault(); if (Object.keys(selectedToolsOnly).length === 0) { alert('Pilih alat!'); return; } await submitBooking({ ruang_id: null, waktu_mulai: document.getElementById('waktuMulaiTool').value, waktu_selesai: document.getElementById('waktuSelesaiTool').value, tujuan_peminjaman: document.getElementById('tujuanTool').value, alat_ids: Object.values(selectedToolsOnly) }, () => { e.target.reset(); selectedToolsOnly = {}; renderTools('listAlatOnly', {}, ''); }); });
-        async function submitBooking(payloadRaw, cb) { const payload = { ...payloadRaw, waktu_mulai: new Date(payloadRaw.waktu_mulai).toISOString(), waktu_selesai: new Date(payloadRaw.waktu_selesai).toISOString() }; try { const res = await fetch(`${API_URL}/booking`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) }); const r = await res.json(); if (res.ok) { alert('Berhasil diajukan!'); cb(); loadBookings(); loadEquipmentOptions(); } else { alert('Gagal: ' + r.error); } } catch (e) { alert('Error koneksi'); } }
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+            await submitBooking({ ruang_id: document.getElementById('ruangId').value, waktu_mulai: document.getElementById('waktuMulai').value, waktu_selesai: document.getElementById('waktuSelesai').value, tujuan_peminjaman: document.getElementById('tujuan').value, alat_ids: Object.values(selectedToolsRoom) }, () => { e.target.reset(); selectedToolsRoom = {}; renderTools('listAlatRoom', {}, ''); });
+
+            btn.innerHTML = 'Ajukan Peminjaman';
+        });
+
+        document.getElementById('toolBookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (Object.keys(selectedToolsOnly).length === 0) { Swal.fire('Error', 'Pilih alat terlebih dahulu!', 'error'); return; }
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+            await submitBooking({ ruang_id: null, waktu_mulai: document.getElementById('waktuMulaiTool').value, waktu_selesai: document.getElementById('waktuSelesaiTool').value, tujuan_peminjaman: document.getElementById('tujuanTool').value, alat_ids: Object.values(selectedToolsOnly) }, () => { e.target.reset(); selectedToolsOnly = {}; renderTools('listAlatOnly', {}, ''); });
+
+            btn.innerHTML = 'Ajukan Peminjaman';
+        });
+
+        async function submitBooking(payloadRaw, cb) {
+            const payload = { ...payloadRaw, waktu_mulai: new Date(payloadRaw.waktu_mulai).toISOString(), waktu_selesai: new Date(payloadRaw.waktu_selesai).toISOString() };
+            try {
+                const res = await fetch(`${API_URL}/booking`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+                const r = await res.json();
+                if (res.ok) {
+                    Swal.fire({ title: 'Berhasil!', text: 'Pengajuan peminjaman berhasil dikirim.', icon: 'success', confirmButtonColor: '#3b82f6' });
+                    cb(); loadBookings(); loadEquipmentOptions();
+                } else {
+                    Swal.fire('Gagal', r.error || 'Terjadi kesalahan', 'error');
+                }
+            } catch (e) {
+                Swal.fire('Error Koneksi', 'Gagal menghubungi server', 'error');
+            }
+        }
 
         async function loadBookings() { const res = await fetch(`${API_URL}/booking`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); const tbody = document.getElementById('bookingTableBody'); tbody.innerHTML = ''; data.forEach(b => { let typeIcon = b.ruangan ? '<i class="fas fa-building text-blue-500"></i> Ruang' : '<i class="fas fa-tools text-green-500"></i> Alat'; let detail = b.ruangan ? `<span class="font-bold text-blue-600">${b.ruangan.nama_ruang}</span>` : '<span class="text-gray-400 italic">Tanpa Ruangan</span>'; if (b.peminjaman_detail_alat?.length > 0) detail += `<div class="text-xs text-gray-500 mt-1">Alat: ${b.peminjaman_detail_alat.map(t => t.jumlah_pinjam + 'x ' + t.peralatan?.nama_alat).join(', ')}</div>`; let color = b.status === 'pending' ? 'text-yellow-600 bg-yellow-100' : (b.status === 'disetujui' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100'); tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="py-3 px-4 font-medium">${typeIcon}</td><td class="py-3 px-4">${detail}</td><td class="py-3 px-4 text-xs text-gray-600">${new Date(b.waktu_mulai).toLocaleString()} <br> s/d <br> ${new Date(b.waktu_selesai).toLocaleString()}</td><td class="py-3 px-4 text-center"><span class="${color} px-2 py-1 rounded text-xs font-bold uppercase">${b.status}</span></td></tr>`; }); }
 
@@ -546,8 +759,31 @@
         }
 
         async function loadMyReports() { const res = await fetch(`${API_URL}/reports/my`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); document.getElementById('reportTableBody').innerHTML = data.map(i => `<tr class="border-b"><td class="p-3">${new Date(i.tanggal_lapor).toLocaleDateString()}</td><td class="p-3 font-bold">${i.peralatan?.nama_alat || '-'}</td><td class="p-3">${i.deskripsi_kerusakan}</td><td class="p-3 text-center"><span class="bg-gray-100 text-xs px-2 py-1 rounded border border-gray-300">${i.status_laporan}</span></td></tr>`).join(''); }
-        document.getElementById('reportForm').addEventListener('submit', async (e) => { e.preventDefault(); await fetch(`${API_URL}/reports`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ alat_id: document.getElementById('laporAlatId').value, deskripsi_kerusakan: document.getElementById('deskripsiKerusakan').value }) }); alert('Terkirim'); e.target.reset(); loadMyReports(); });
-        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = 'Mengirim...';
+            await fetch(`${API_URL}/reports`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ alat_id: document.getElementById('laporAlatId').value, deskripsi_kerusakan: document.getElementById('deskripsiKerusakan').value }) });
+            Swal.fire('Terkirim', 'Laporan kerusakan berhasil dikirim.', 'success');
+            e.target.reset(); loadMyReports();
+            btn.innerHTML = 'Kirim Laporan';
+        });
+        function logout() {
+            Swal.fire({
+                title: 'Keluar?',
+                text: "Anda harus login ulang untuk masuk kembali.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Keluar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.clear();
+                    window.location.href = 'index.html';
+                }
+            })
+        }
 
         function toggleChat() { const c = document.getElementById('chatWindow'); if (c.classList.contains('chat-hidden')) { c.classList.remove('chat-hidden'); c.classList.add('chat-visible'); document.getElementById('chatInput').focus(); } else { c.classList.remove('chat-visible'); c.classList.add('chat-hidden'); } }
         document.getElementById('chatForm').addEventListener('submit', async (e) => { e.preventDefault(); const i = document.getElementById('chatInput'); const m = i.value.trim(); if (!m) return; addMessage(m, 'user'); i.value = ''; const l = addMessage('Sedang mengecek database...', 'ai', true); try { const r = await fetch(`${API_URL}/ai/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ message: m }) }); const d = await r.json(); removeMessage(l); if (d.reply) addMessage(d.reply, 'ai'); else addMessage("Maaf, server AI tidak merespon.", 'ai'); } catch (e) { removeMessage(l); addMessage("Maaf, gagal terhubung ke server AI.", 'ai'); } });

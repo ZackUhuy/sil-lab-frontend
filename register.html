@@ -1,62 +1,146 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - SISIL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen font-sans">
-    
-    <div class="bg-white p-8 rounded-xl shadow-lg w-96 transform transition hover:scale-105 duration-300">
-        <div class="text-center mb-6">
-            <h2 class="text-3xl font-bold text-green-600 mb-1">Buat Akun</h2>
-            <p class="text-xs text-gray-500">Bergabunglah dengan SISIL UIN Said</p>
+
+<body
+    class="bg-gradient-to-br from-green-50 to-teal-100 flex items-center justify-center h-screen font-sans relative overflow-hidden">
+    <!-- Background Decoration -->
+    <div
+        class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
+    </div>
+    <div
+        class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-teal-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+    </div>
+    <div
+        class="absolute -bottom-32 left-20 w-96 h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000">
+    </div>
+
+    <div
+        class="bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md transform transition hover:scale-[1.01] duration-500 border border-white/50 relative z-10">
+        <div class="text-center mb-8">
+            <h2
+                class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-600 tracking-tight mb-1">
+                Buat Akun</h2>
+            <p class="text-sm font-medium text-gray-500">Bergabunglah dengan SISIL UIN Said</p>
         </div>
-        
-        <form id="registerForm" class="space-y-4">
+
+        <form id="registerForm" class="space-y-5">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                <input type="text" id="nama" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none" required>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Nama Lengkap</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-user text-gray-400 group-focus-within:text-green-500 transition-colors"></i>
+                    </div>
+                    <input type="text" id="nama"
+                        class="pl-11 w-full p-3.5 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all duration-300 shadow-sm"
+                        placeholder="Nama Lengkap" required>
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email Institusi</label>
-                <input type="email" id="email" placeholder="nim@mhs.uinsaid.ac.id" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none" required>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Email Institusi</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i
+                            class="fas fa-envelope text-gray-400 group-focus-within:text-green-500 transition-colors"></i>
+                    </div>
+                    <input type="email" id="email" placeholder="nim@mhs.uinsaid.ac.id"
+                        class="pl-11 w-full p-3.5 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all duration-300 shadow-sm"
+                        required>
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <div class="relative">
-                    <input type="password" id="password" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none pr-10" required>
-                    <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none">
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Password</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400 group-focus-within:text-green-500 transition-colors"></i>
+                    </div>
+                    <input type="password" id="password"
+                        class="pl-11 pr-11 w-full p-3.5 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all duration-300 shadow-sm"
+                        placeholder="••••••••" required>
+                    <button type="button" onclick="togglePassword()"
+                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none">
                         <i id="eyeIcon" class="fas fa-eye"></i>
                     </button>
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Daftar Sebagai</label>
-                <select id="role" class="w-full p-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-green-500 outline-none">
-                    <option value="mahasiswa">Mahasiswa</option>
-                    <option value="dosen">Dosen</option>
-                    <option value="asisten">Asisten Lab</option>
-                </select>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Daftar Sebagai</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i
+                            class="fas fa-id-badge text-gray-400 group-focus-within:text-green-500 transition-colors"></i>
+                    </div>
+                    <select id="role"
+                        class="pl-11 w-full p-3.5 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all duration-300 shadow-sm appearance-none cursor-pointer">
+                        <option value="mahasiswa">Mahasiswa</option>
+                        <option value="dosen">Dosen</option>
+                        <option value="asisten">Asisten Lab</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
             </div>
 
-            <button type="submit" class="w-full bg-green-600 text-white p-3 rounded-lg font-bold hover:bg-green-700 transition shadow-md active:scale-95">
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white p-3.5 rounded-xl font-bold transition-all shadow-lg shadow-green-500/30 transform active:scale-95 text-lg cursor-pointer">
                 Daftar Sekarang
             </button>
         </form>
 
-        <p class="mt-6 text-sm text-center text-gray-600">
-            Sudah punya akun? <a href="index.html" class="text-green-600 hover:underline font-semibold">Masuk di sini</a>
+        <p class="mt-8 text-sm text-center text-gray-600">
+            Sudah punya akun? <a href="index.html"
+                class="text-green-600 hover:text-green-800 hover:underline font-bold transition">Masuk di sini</a>
         </p>
     </div>
 
     <script>
         const API_URL = 'https://sil-lab-backend.vercel.app/api';
+
+        // CSS Animation for Blobs
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes blob {
+                0% { transform: translate(0px, 0px) scale(1); }
+                33% { transform: translate(30px, -50px) scale(1.1); }
+                66% { transform: translate(-20px, 20px) scale(0.9); }
+                100% { transform: translate(0px, 0px) scale(1); }
+            }
+            .animate-blob {
+                animation: blob 7s infinite;
+            }
+            .animation-delay-2000 {
+                animation-delay: 2s;
+            }
+            .animation-delay-4000 {
+                animation-delay: 4s;
+            }
+        `;
+        document.head.appendChild(style);
 
         function togglePassword() {
             const input = document.getElementById('password');
@@ -73,7 +157,9 @@
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mendaftarkan...';
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mendaftarkan...';
+            btn.opacity = 0.7;
             btn.disabled = true;
 
             const payload = {
@@ -90,20 +176,34 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
-                
+
                 if (res.ok) {
-                    alert('✅ Pendaftaran Berhasil!\nSilakan cek email Anda untuk verifikasi akun sebelum login.');
-                    window.location.href = 'index.html';
+                    Swal.fire({
+                        title: 'Pendaftaran Berhasil! 🎉',
+                        text: 'Silakan cek email Anda untuk verifikasi akun sebelum login.',
+                        icon: 'success',
+                        confirmButtonColor: '#059669',
+                        confirmButtonText: 'Ke Halaman Login'
+                    }).then((result) => {
+                        window.location.href = 'index.html';
+                    });
                 } else {
-                    alert('❌ Gagal: ' + data.error);
+                    Swal.fire({
+                        title: 'Gagal',
+                        text: data.error,
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
                 }
             } catch (error) {
-                alert('Terjadi kesalahan koneksi ke server.');
+                Swal.fire('Error', 'Terjadi kesalahan koneksi ke server.', 'error');
             } finally {
-                btn.innerHTML = 'Daftar Sekarang';
+                btn.innerHTML = originalText;
+                btn.opacity = 1;
                 btn.disabled = false;
             }
         });
     </script>
 </body>
+
 </html>
