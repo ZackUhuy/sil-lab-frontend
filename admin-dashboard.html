@@ -528,29 +528,49 @@
             const pendingBody = document.getElementById('pendingTableBody'); const approvedBody = document.getElementById('approvedTableBody');
             pendingBody.innerHTML = ''; approvedBody.innerHTML = '';
             const pendingData = data.filter(i => i.status === 'pending'); const approvedData = data.filter(i => i.status !== 'pending');
+
+            // Helper for Role Badges
+            const getRoleBadge = (role) => {
+                const r = role ? role.toLowerCase() : '';
+                if (r === 'admin') return `<span class="ml-1 bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded-full border border-indigo-200 font-bold">👑 Admin</span>`;
+                if (r === 'dosen') return `<span class="ml-1 bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full border border-blue-200 font-bold">👨‍🏫 Dosen</span>`;
+                if (r === 'asisten') return `<span class="ml-1 bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded-full border border-purple-200 font-bold">🛠️ Asisten</span>`;
+                return `<span class="ml-1 bg-green-100 text-green-800 text-[10px] px-2 py-0.5 rounded-full border border-green-200 font-bold">🎓 Mhs</span>`;
+            };
+
             if (pendingData.length === 0) pendingBody.innerHTML = '<tr><td colspan="3" class="p-3 text-center italic text-gray-400">Tidak ada permintaan baru</td></tr>';
             pendingData.forEach(item => {
                 let info = item.ruangan ? `<div class="font-bold text-blue-600">📍 ${item.ruangan.nama_ruang}</div>` : `<div class="font-bold text-purple-600">📦 Peminjaman Alat</div>`;
                 if (item.peminjaman_detail_alat?.length > 0) info += `<div class="text-xs text-gray-500 mt-1">Alat: ${item.peminjaman_detail_alat.map(t => t.jumlah_pinjam + 'x ' + t.peralatan?.nama_alat).join(', ')}</div>`;
                 const start = new Date(item.waktu_mulai).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' });
                 const end = new Date(item.waktu_selesai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                pendingBody.innerHTML += `<tr class="bg-yellow-50 border-b border-yellow-100"><td class="p-3"><div class="font-bold text-gray-800">${item.users?.nama || 'User'}</div></td><td class="p-3 text-xs"><div class="font-medium text-gray-800">${item.tujuan_peminjaman}</div>${info}<div class="mt-1 text-gray-600">📅 ${start} s/d ${end}</div></td><td class="p-3 text-center space-x-1"><button onclick="updateStatus('${item.id}', 'disetujui')" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600 shadow">✓ Terima</button><button onclick="updateStatus('${item.id}', 'ditolak')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 shadow">✕ Tolak</button></td></tr>`;
+
+                const roleBadge = getRoleBadge(item.users?.role);
+
+                pendingBody.innerHTML += `<tr class="bg-yellow-50 border-b border-yellow-100"><td class="p-3"><div class="font-bold text-gray-800">${item.users?.nama || 'User'}</div>${roleBadge}</td><td class="p-3 text-xs"><div class="font-medium text-gray-800">${item.tujuan_peminjaman}</div>${info}<div class="mt-1 text-gray-600">📅 ${start} s/d ${end}</div></td><td class="p-3 text-center space-x-1"><button onclick="updateStatus('${item.id}', 'disetujui')" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600 shadow">✓ Terima</button><button onclick="updateStatus('${item.id}', 'ditolak')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 shadow">✕ Tolak</button></td></tr>`;
             });
+
             const groups = {}; approvedData.forEach(item => { const baseName = item.tujuan_peminjaman.split(' (Pert.')[0]; const key = baseName + '_' + (item.ruang_id || 'toolonly'); if (!groups[key]) groups[key] = []; groups[key].push(item); });
             for (const key in groups) {
                 const items = groups[key]; items.sort((a, b) => new Date(a.waktu_mulai) - new Date(b.waktu_mulai));
                 const first = items[0]; const baseName = first.tujuan_peminjaman.split(' (Pert.')[0]; const groupId = 'group-' + Math.random().toString(36).substr(2, 9);
                 let headerText = '⚠️ Tanpa Ruangan'; if (first.ruangan) headerText = first.ruangan.nama_ruang; else if (first.peminjaman_detail_alat?.length > 0) headerText = '📦 Peminjaman Alat';
                 const peminjamName = first.users?.nama || 'Admin/System';
-                let labelType = first.users?.role === 'admin' ? `<span class="ml-2 bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded-full border border-indigo-200 font-bold">📅 Kuliah</span>` : `<span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full border border-green-200 font-bold">🙋 User</span>`;
-                approvedBody.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition cursor-pointer" onclick="toggleGroup('${groupId}')"><td class="p-3 text-center text-gray-400 font-bold text-lg transition-transform transform" id="icon-${groupId}">▶</td><td class="p-3 font-bold text-gray-800">${baseName}<span class="text-xs text-gray-400 ml-1">(${items.length} Sesi)</span> ${labelType}</td><td class="p-3 text-sm font-semibold text-blue-700">${peminjamName}</td><td class="p-3 text-sm text-gray-600">${headerText}</td><td class="p-3 text-xs text-gray-500">Mulai: ${new Date(items[0].waktu_mulai).toLocaleDateString()}</td><td class="p-3 text-center"><button onclick="event.stopPropagation(); deleteBatch('${baseName}', '${first.ruang_id || 'null'}')" class="text-red-500 hover:text-red-700 text-xs font-bold border border-red-200 px-2 py-1 rounded bg-red-50">Hapus Semua</button></td></tr>`;
+
+                // Use new Badge Logic
+                const labelType = getRoleBadge(first.users?.role);
+
+                approvedBody.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition cursor-pointer" onclick="toggleGroup('${groupId}')"><td class="p-3 text-center text-gray-400 font-bold text-lg transition-transform transform" id="icon-${groupId}">▶</td><td class="p-3 font-bold text-gray-800">${baseName}<span class="text-xs text-gray-400 ml-1">(${items.length} Sesi)</span></td><td class="p-3 text-sm font-semibold text-blue-700">${peminjamName} ${labelType}</td><td class="p-3 text-sm text-gray-600">${headerText}</td><td class="p-3 text-xs text-gray-500">Mulai: ${new Date(items[0].waktu_mulai).toLocaleDateString()}</td><td class="p-3 text-center"><button onclick="event.stopPropagation(); deleteBatch('${baseName}', '${first.ruang_id || 'null'}')" class="text-red-500 hover:text-red-700 text-xs font-bold border border-red-200 px-2 py-1 rounded bg-red-50">Hapus Semua</button></td></tr>`;
+
                 let childRows = `<tr id="${groupId}" class="hidden-row bg-slate-50 shadow-inner"><td colspan="6" class="p-0"><table class="w-full">`;
                 items.forEach(sub => {
                     let toolInfo = sub.peminjaman_detail_alat?.length > 0 ? `<br><span class="text-gray-400 italic">Alat: ${sub.peminjaman_detail_alat.map(t => t.jumlah_pinjam + 'x ' + t.peralatan?.nama_alat).join(', ')}</span>` : '';
                     const subStart = new Date(sub.waktu_mulai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
                     const subEnd = new Date(sub.waktu_selesai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                     const subPeminjam = sub.users?.nama || '-';
-                    childRows += `<tr class="border-b border-gray-200 text-xs text-gray-600 hover:bg-gray-100"><td class="p-3 pl-12 w-1/3 font-medium">${sub.tujuan_peminjaman} ${toolInfo}</td><td class="p-3 w-1/6 text-gray-500">${subPeminjam}</td><td class="p-3 w-1/6 text-gray-500">-</td><td class="p-3 w-1/4">${subStart} s/d ${subEnd}</td><td class="p-3 text-center w-24"><button onclick="deleteItem('booking', '${sub.id}', 'Hapus pertemuan ini saja?', loadAllBookings)" class="text-red-400 hover:text-red-600 underline">Hapus</button></td></tr>`;
+                    const subRoleBadge = getRoleBadge(sub.users?.role);
+
+                    childRows += `<tr class="border-b border-gray-200 text-xs text-gray-600 hover:bg-gray-100"><td class="p-3 pl-12 w-1/3 font-medium">${sub.tujuan_peminjaman} ${toolInfo}</td><td class="p-3 w-1/6 text-gray-500">${subPeminjam} ${subRoleBadge}</td><td class="p-3 w-1/6 text-gray-500">-</td><td class="p-3 w-1/4">${subStart} s/d ${subEnd}</td><td class="p-3 text-center w-24"><button onclick="deleteItem('booking', '${sub.id}', 'Hapus pertemuan ini saja?', loadAllBookings)" class="text-red-400 hover:text-red-600 underline">Hapus</button></td></tr>`;
                 });
                 approvedBody.innerHTML += childRows + `</table></td></tr>`;
             }
